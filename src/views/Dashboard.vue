@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="row">
-          <div class="col-lg-3 col-md-6 col-12">
+          <div class="col-lg-3 col-md-6 col-6">
             <card
               :title="stats.money.title"
               :value="stats.money.value"
