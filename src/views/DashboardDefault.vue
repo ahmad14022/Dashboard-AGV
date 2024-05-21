@@ -24,7 +24,7 @@
               {{ direction }}
             </h5>
           </div>
-          <div class="card-body p-30">
+          <div class="card-body p-3">
             <Joystick
               :size="85"
               base-color="#FFDDDD"
