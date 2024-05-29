@@ -1,6 +1,44 @@
 <template>
   <div class="py-4 container-fluid">
     <div class="row">
+      <div class="col-lg col-md-6 col-12">
+        <div class="card p-3">
+          <p class="font-weight-bold text-sm text-center mt-2">ADD NGROK PORT</p>
+          <argon-button @click="modal.connectPORT = true" class="bg-gradient-success">
+      
+            <i class="fas fa-plus" style="margin-left: 5px"></i>
+          </argon-button>
+        </div>
+        <ip-input
+          v-model:show="modal.connectPORT"
+          modal-classes="modal-lg"
+          @hidden="clearInputs"
+        >
+          <template #header>
+            <p class="modal-title">Enter NGROK Port</p>
+          </template>
+          <template #body>
+            <form @submit.prevent="addPORT">
+              <base-input
+                v-model="input.port"
+                name="PORT"
+                class="input"
+                placeholder="Enter Port Number"
+                required
+              ></base-input>
+            </form>
+            <p>The port is used to control the robot using a joystick</p>
+          </template>
+          <template #footer>
+            <argon-button class="bg-gradient-success" @click="addPORT">
+              <span v-if="!loading">Add</span>
+              <span v-else>
+                <i class="fa fa-spinner fa-spin"></i> Connecting...
+              </span>
+            </argon-button>
+          </template>
+        </ip-input>
+      </div>
       <div class="col-lg col-6">
         <div class="card d-flex flex-row align-items-center">
           <div>
@@ -59,18 +97,6 @@
           directionReverse
         ></card>
       </div>
-      <div class="col-lg col-md-6 col-12">
-        <card
-          :title="stats.clients.title"
-          :value="stats.clients.value"
-          :percentage="stats.clients.percentage"
-          :iconClass="stats.clients.iconClass"
-          :iconBackground="stats.clients.iconBackground"
-          :percentageColor="stats.clients.percentageColor"
-          :detail="stats.clients.detail"
-          directionReverse
-        ></card>
-      </div>
     </div>
 
     <div class="row">
@@ -79,19 +105,13 @@
           <div class="card-body px-0 pt-1 pb-2 d-flex flex-column">
             <div class="pb-0 card-header">
               <div class="d-flex justify-content-between">
-                <h6 class="mb-2 card-bg">Data Pose AGV Lidar</h6>
-                <!-- <router-link to="/history-line-task" class="text-end">
-                  See History <i class="fas fa-regular fa-clock"></i>
-                </router-link> -->
+                <h6 class="mb-2 bg-title">Data Pose AGV Lidar</h6>
               </div>
             </div>
             <authors-table-lidar-pose />
           </div>
         </div>
       </div>
-      <!-- <div class="col-lg-5">
-        <carousel />
-      </div> -->
     </div>
 
     <div class="row">
@@ -100,8 +120,8 @@
           <div class="card-body px-0 pt-1 pb-2 d-flex flex-column">
             <div class="pb-0 card-header">
               <div class="d-flex justify-content-between">
-                <h6 class="mb-2 card-bg">Data Task AGV Lidar</h6>
-                <router-link to="/history-line-task" class="text-end">
+                <h6 class="mb-2 bg-title">Data Task AGV Lidar</h6>
+                <router-link to="/history-lidar-task" class="text-end">
                   See History <i class="fas fa-regular fa-clock"></i>
                 </router-link>
               </div>
@@ -125,28 +145,39 @@ import AuthorsTableLidar from "./components/AuthorsTableLidar.vue";
 import AuthorsTableLidarPose from "./components/AuthorsTableLidarPose.vue";
 import Joystick from "vue-joystick-component";
 import axios from "axios";
-import { useToast } from "vue-toast-notification";
+import { useToast } from "vue-toastification";
+import ArgonButton from "../components/ArgonButton.vue";
+import IpInput from "./components/IpInput.vue";
+import { mapActions, mapState } from "vuex";
+import BaseInput from "./components/BaseInput.vue";
 
 export default {
   name: "dashboard-agv-lidar",
   data() {
     return {
-      status: "", // Menambahkan status
-      direction: "", // Menambahkan direction
+      modal: {
+        connectPORT: false,
+      },
+      input: {
+        port: "",
+      },
+      status: "",
+      direction: "",
       speed: 0,
       speedInput: "",
       ros: null,
-      axes: [0, 0, 0, 0], // Menambahkan axes
-      buttons: [0, 0, 0, 0], // Menambahkan buttons
+      axes: [0, 0, 0, 0],
+      buttons: [0, 0, 0, 0],
       connected: false,
       mapViewer: null,
       mapGridClient: null,
       msg: null,
       agvOn: false,
+      loading: false,
       stats: {
         on_off: {
           title: "Status Robot",
-          value: "fas fa-power-off", // Corrected value assignment
+          value: "fas fa-power-off",
           iconBackground: "fas fa-power-off",
         },
         money: {
@@ -166,42 +197,52 @@ export default {
           detail: "AGV",
         },
         clients: {
-          title: "Kecepatan",
-          value: "2km/jam",
+          title: "PORT NGROK",
+          value: "0",
           percentage: "",
           iconClass: "ni ni-spaceship",
           percentageColor: "text-danger",
           iconBackground: "bg-gradient-danger",
-          detail: "every navigation",
+          detail: "every control",
         },
       },
     };
   },
+  computed: {
+    ...mapState(["ngrokPort"]),
+  },
   created() {
     this.connectWebSocket();
+    this.fetchAGVData();
+    this.fetchPoseData();
   },
   methods: {
+    ...mapActions(["setNgrokPort"]),
     connectWebSocket() {
+      const self = this;
       this.socket = new WebSocket(
         "wss://sans-agv.azurewebsites.net/ws/connect/lidar"
       );
 
       this.socket.onopen = (event) => {
         const toast = useToast();
-        console.log(event);
-        this.socket.send("ws://0.tcp.ap.ngrok.io:16160");
+        console.log("ini event", event);
+        console.log("ngrokPort:", self.ngrokPort);
+
+        this.socket.send(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
+
+        console.log(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
+        this.socket.onmessage = (event) => {
+          console.log("Response from server:", event.data);
+        };
+
         toast.success("Successfully connected to the echo websocket server...");
       };
 
-      this.socket.onclose = (event) => {
+      this.socket.onclose = () => {
         const toast = useToast();
-        if (event.wasClean) {
-          toast.warning(
-            `Connection closed cleanly, code=${event.code} reason=${event.reason}`
-          );
-        } else {
           toast.danger("Connection died");
-        }
+        
       };
 
       this.socket.onerror = (error) => {
@@ -234,7 +275,7 @@ export default {
       this.axes = [0, 0, 0, 0];
     },
     joyMove(x, y) {
-      this.axes[0] = x;
+      this.axes[0] = -x;
       this.axes[1] = y;
     },
     sendJoystickData() {
@@ -249,7 +290,6 @@ export default {
         console.error("WebSocket connection is not open");
       }
     },
-
     fetchAGVData() {
       axios
         .get("https://sans-agv.azurewebsites.net/api/agv")
@@ -302,6 +342,28 @@ export default {
           console.error("Error fetching Station data:", error);
         });
     },
+    connectToRobot() {
+      this.modal.connectPORT = true;
+    },
+    addPORT() {
+      const toast = useToast();
+      this.loading = true;
+
+      setTimeout(() => {
+        this.setNgrokPort(this.input.port);
+        console.log(`Port set to: ${this.input.port}`);
+
+        this.loading = false;
+        this.modal.connectPORT = false;
+
+        // Reconnect WebSocket with the updated port
+        if (this.socket) {
+          this.socket.close();
+        }
+        // this.connectWebSocket();
+        toast.success(`PORT ${this.input.port} Successfully added`)
+      }, 1000);
+    },
   },
   components: {
     Card,
@@ -311,6 +373,9 @@ export default {
     AuthorsTableLidar,
     AuthorsTableLidarPose,
     Joystick,
+    ArgonButton,
+    IpInput,
+    BaseInput,
   },
 };
 </script>
@@ -385,5 +450,13 @@ export default {
 
 .text-move {
   color: orange;
+}
+
+.bg-title {
+  background-color: rgb(157, 254, 124);
+  padding: 0.5rem;
+  border-radius: 0.4rem;
+  color:green;
+  font-weight: 700;
 }
 </style>

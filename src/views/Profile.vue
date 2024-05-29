@@ -320,7 +320,7 @@ import ProfileCard from "./components/ProfileCard.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 import Cookies from "js-cookie";
-import { useToast } from "vue-toast-notification";
+import { useToast } from "vue-toastification";
 import "vue-toast-notification/dist/theme-sugar.css";
 import { mapActions } from "pinia";
 import useAuthStore from "../store/auth.js";

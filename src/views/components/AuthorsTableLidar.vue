@@ -1,6 +1,7 @@
 <script>
 import ArgonButton from "../../components/ArgonButton.vue";
 import BaseTableDashboard from "./BaseTableDashboard.vue";
+import { useToast } from "vue-toastification";
 import moment from "moment";
 
 export default {
@@ -60,17 +61,19 @@ export default {
     };
 
     socket.onclose = function (event) {
+      const toast = useToast()
       if (event.wasClean) {
-        alert(
+        toast.danger(
           `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
         );
       } else {
-        alert("[close] Connection died");
+        toast.danger("[close] Connection died");
       }
     };
 
     socket.onerror = function (error) {
-      alert(`[error]`);
+      const toast = useToast()
+      toast.danger(`[error]`);
     };
 
     

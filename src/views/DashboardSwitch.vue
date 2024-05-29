@@ -82,7 +82,7 @@
               <div class="card-body px-0 pt-1 pb-2 d-flex flex-column">
                 <div class="pb-0 card-header">
                   <div class="d-flex justify-content-between">
-                    <h6 class="mb-2 card-bg">Data Task AGV Line Follower</h6>
+                    <h6 class="mb-2 bg-title">Data Task AGV Line Follower</h6>
                     <router-link to="/history-line-task" class="text-end"
                       >See History <i class="fas fa-regular fa-clock"></i
                     ></router-link>
@@ -103,6 +103,7 @@ import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesCard from "./components/CategoriesCard.vue";
 import AuthorsTableLineFollower from "./components/AuthorsTableLineFollower.vue";
+import { useToast } from "vue-toastification";
 import useHistory from "@/store/history";
 
 import US from "@/assets/img/icons/flags/US.png";
@@ -195,12 +196,13 @@ export default {
     };
 
     this.socket.onclose = (event) => {
+      const toast = useToast()
       if (event.wasClean) {
-        alert(
+        toast.warning(
           `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
         );
       } else {
-        alert("[close] Connection died");
+        toast.danger("[close] Connection died");
       }
     };
 

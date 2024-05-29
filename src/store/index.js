@@ -16,9 +16,14 @@ export default createStore({
     showNavbar: true,
     showFooter: true,
     showMain: true,
-    layout: "default"
+    layout: "default",
+    ngrokPort: '',
   },
   mutations: {
+    setNgrokPort(state, port) {
+      state.ngrokPort = port;
+      console.log(`Port set in Vuex: ${state.ngrokPort}`); // Debugging
+    },
     toggleConfigurator(state) {
       state.showConfig = !state.showConfig;
     },
@@ -52,10 +57,14 @@ export default createStore({
   actions: {
     toggleSidebarColor({ commit }, payload) {
       commit("sidebarType", payload);
-    }
-    
+    },
+    setNgrokPort({ commit }, port) {
+      commit('setNgrokPort', port);
+    },
   },modules: {
     // auth,
   },
-  getters: {}
+  getters: {
+    ngrokPort: state => state.ngrokPort
+  }
 });

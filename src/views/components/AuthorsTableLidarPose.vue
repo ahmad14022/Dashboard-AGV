@@ -2,6 +2,7 @@
 import ArgonButton from "../../components/ArgonButton.vue";
 import BaseTableDashboard from "./BaseTableDashboard.vue";
 import moment from "moment";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "ListView",
@@ -68,17 +69,19 @@ export default {
     };
 
     socket.onclose = function (event) {
+      const toast = useToast()
       if (event.wasClean) {
-        alert(
+        toast.warning(
           `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
         );
       } else {
-        alert("[close] Connection died");
+        toast.danger("[close] Connection died");
       }
     };
 
     socket.onerror = function (error) {
-      alert(`[error]`);
+      const toast = useToast()
+      toast.danger(`[error]`);
     };
 
     
