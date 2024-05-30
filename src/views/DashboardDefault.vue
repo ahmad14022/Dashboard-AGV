@@ -3,9 +3,13 @@
     <div class="row">
       <div class="col-lg col-md-6 col-12">
         <div class="card p-3">
-          <p class="font-weight-bold text-sm text-center mt-2">ADD NGROK PORT</p>
-          <argon-button @click="modal.connectPORT = true" class="bg-gradient-success">
-      
+          <p class="font-weight-bold text-sm text-center mt-2">
+            ADD NGROK PORT
+          </p>
+          <argon-button
+            @click="modal.connectPORT = true"
+            class="bg-gradient-success"
+          >
             <i class="fas fa-plus" style="margin-left: 5px"></i>
           </argon-button>
         </div>
@@ -241,8 +245,7 @@ export default {
 
       this.socket.onclose = () => {
         const toast = useToast();
-          toast.danger("Connection died");
-        
+        toast.danger("Connection died");
       };
 
       this.socket.onerror = (error) => {
@@ -361,7 +364,7 @@ export default {
           this.socket.close();
         }
         // this.connectWebSocket();
-        toast.success(`PORT ${this.input.port} Successfully added`)
+        toast.success(`PORT ${this.input.port} Successfully added`);
       }, 1000);
     },
   },
@@ -455,8 +458,6 @@ export default {
 .bg-title {
   background-color: rgb(157, 254, 124);
   padding: 0.5rem;
-  border-radius: 0.4rem;
-  color:green;
-  font-weight: 700;
+  border-radius: 0.5rem;
 }
 </style>
