@@ -1,102 +1,74 @@
 <template>
-  <nav
-    class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl"
-    :class="{
-      'top-0 position-sticky z-index-sticky': $store.state.isRTL,
-    }"
-    v-bind="$attrs"
-    id="navbarBlur"
-    data-scroll="true"
-  >
-    <div class="py-2 d-flex align-items-center navbar-collapse">
-      <breadcrumbs :currentPage="currentRouteName" textWhite="text-white" />
-      <div
-        class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4"
-        id="navbar"
-      >
-        <div
-          class="pe-md-3"
-          :class="$store.state.isRTL ? 'me-md-auto' : 'ms-md-auto'"
-        >
-          <argon-button
-            v-if="
-              currentRouteName === 'Dashboard Agv Lidar' ||
-              currentRouteName === 'Dashboard Agv Line Follower'
-            "
-            @click="switchToDashboard"
-            >{{ switchButtonDashboardText }}
-            <i class="fas fa-sync" style="margin-left: 5px"></i>
-          </argon-button>
+  <nav>
+    <div class="py-3 d-flex justify-content-between">
+      <div>
+        <breadcrumbs :currentPage="currentRouteName" textWhite="text-white" />
+      </div>
+      <div :class="$store.state.isRTL ? 'me-md-auto' : 'ms-md-auto'">
+        <div class="d-flex align-items-center justify-content-center">
+          <div>
+            <argon-button
+              v-if="
+                currentRouteName === 'AGV Lidar' ||
+                currentRouteName === 'AGV Line Follower'
+              "
+              @click="switchToAGV"
+              class="button-switch"
+              ><span class="switch-button-text">{{ switchButtonAGVText }}</span>
+              <i class="fas fa-sync" style="margin-left: 7px"></i>
+            </argon-button>
+          </div>
+          <div>
+            <argon-button
+              v-if="
+                currentRouteName === 'Pose AGV Lidar' ||
+                currentRouteName === 'Station AGV Line Follower'
+              "
+              @click="switchToStation"
+              class="button-switch"
+              ><span class="switch-button-text">{{
+                switchButtonStationText
+              }}</span>
+              <i class="fas fa-sync" style="margin-left: 7px"></i>
+            </argon-button>
+          </div>
 
-          <argon-button
-            v-if="
-              currentRouteName === 'AGV Lidar' ||
-              currentRouteName === 'AGV Line Follower'
-            "
-            @click="switchToAGV"
-            >{{ switchButtonAGVText }}
-            <i class="fas fa-sync" style="margin-left: 5px"></i>
-          </argon-button>
-
-          <argon-button
-            v-if="
-              currentRouteName === 'Pose AGV Lidar' ||
-              currentRouteName === 'Station AGV Line Follower'
-            "
-            @click="switchToStation"
-            >{{ switchButtonStationText }}
-            <i class="fas fa-sync" style="margin-left: 5px"></i>
-          </argon-button>
+          <div>
+            <argon-button
+              v-if="
+                currentRouteName === 'Dashboard Agv Lidar' ||
+                currentRouteName === 'Dashboard Agv Line Follower'
+              "
+              @click="switchToDashboard"
+              class="button-switch"
+              ><span class="switch-button-text">{{
+                switchButtonDashboardText
+              }}</span>
+              <i class="fas fa-sync" style="margin-left: 7px"></i>
+            </argon-button>
+          </div>
+          <div>
+            <button class="toggle" @click="toggleSidebar">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
         </div>
-        
       </div>
     </div>
   </nav>
-
-  <!-- add modal -->
-  <ip-input
-    v-model:show="modal.connectPORT"
-    modal-classes="modal-lg"
-    @hidden="clearInputs"
-  >
-    <template #header>
-      <p class="modal-title">Input Your NGROK Port</p>
-    </template>
-    <template #body>
-      <form @submit.prevent="addIP()">
-        <base-input
-          v-model="input.port"
-          name="PORT"
-          class="input"
-          placeholder="add PORT"
-          required
-        ></base-input>
-      </form>
-      <p>PORT digunakan untuk controlling robot dengan joystick</p>
-    </template>
-    <template #footer>
-      <argon-button class="success">
-        <span v-if="!loading">Connect to the PORT</span>
-        <span v-else>
-          <i class="fa fa-spinner fa-spin"></i> Connecting...
-        </span>
-      </argon-button>
-    </template>
-  </ip-input>
 </template>
 
 <script>
 import Breadcrumbs from "../Breadcrumbs.vue";
-// import { mapActions, mapState } from "pinia";
 import { mapActions } from "vuex";
-import useDropDownStore from "@/store/dropdown";
 import Cookies from "js-cookie";
 import ArgonButton from "../../components/ArgonButton.vue";
 import IpInput from "../../views/components/IpInput.vue";
 import MultiSelect from "vue-multiselect";
 import BaseInput from "../../views/components/BaseInput.vue";
 import "@/assets/css/vue-multiselect.min.css";
-import { useToast } from "vue-toastification";;
+import { useToast } from "vue-toastification";
+
 export default {
   name: "navbar",
   data() {
@@ -116,7 +88,6 @@ export default {
   },
   props: ["minNav", "textWhite"],
   created() {
-    // this.a$ddDataAGV();
     this.minNav;
   },
   methods: {
@@ -127,16 +98,15 @@ export default {
     connectToRobot(event) {
       try {
         event.preventDefault();
-        // Memastikan port tersimpan di store
         this.setNgrokPort(this.input.port);
-        console.log(`Port set to: ${this.input.port}`); // Debugging
+        console.log(`Port set to: ${this.input.port}`);
         this.modal.connectPORT = true;
       } catch (error) {
         console.error("Error fetching AGV data:", error.message);
       }
     },
     toggleSidebar() {
-      this.$store.commit("navbarMinimize");
+      this.$store.commit("toggleSidebar");
     },
     switchToDashboard() {
       const toast = useToast();
@@ -176,13 +146,12 @@ export default {
     },
     addIP(event) {
       event.preventDefault();
-      // Perbarui nilai port ngrok di Vuex
       this.$store.commit("setNgrokPort", this.input.port);
       this.modal.connectPORT = false;
       console.log(`ini modal untuk menambahkan port ${this.input.port}`);
     },
     setPort(port) {
-      this.$store.dispatch("setNgrokPort", port); // Memanggil action untuk mengatur nilai ngrokPort
+      this.$store.dispatch("setNgrokPort", port);
     },
   },
   components: {
@@ -214,3 +183,40 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.toggle {
+  color: white;
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  display: none;
+}
+
+.switch-button-text {
+  display: inline-block;
+}
+
+@media (max-width: 992px) {
+  .toggle {
+    display: block;
+  }
+  .switch-button-text {
+    display: none;
+  }
+  .button-switch {
+    background: none;
+    box-shadow: none;
+    border: none;
+    font-size: 1.2rem;
+  }
+
+  .button-switch:hover,
+  .button-switch:active,
+  .button-switch:focus {
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+</style>

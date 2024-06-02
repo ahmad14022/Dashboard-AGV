@@ -42,47 +42,7 @@
               Dashboard
             </router-link>
           </li>
-          <!-- <li class="nav-item">
-            <router-link class="nav-link me-2" to="/profile">
-              <i
-                class="fa fa-user opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              Profile
-            </router-link>
-          </li> -->
-          <!-- <li class="nav-item">
-            <router-link class="nav-link me-2" to="/signup">
-              <i
-                class="fas fa-user-circle opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              Sign Up
-            </router-link>
-          </li> -->
-          <!-- <li class="nav-item">
-            <router-link class="nav-link me-2" to="/signin">
-              <i
-                class="fas fa-key opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              Sign In
-            </router-link>
-          </li> -->
         </ul>
-        <!-- <ul class="navbar-nav d-lg-block d-none">
-          <li class="nav-item">
-            <a
-              href="https://www.creative-tim.com/product/vue-argon-dashboard"
-              class="btn btn-sm mb-0 me-1"
-              :class="isBtn"
-              >Free download</a
-            >
-          </li>
-        </ul> -->
       </div>
     </div>
   </nav>
@@ -98,7 +58,7 @@ export default {
   data() {
     return {
       downArrWhite,
-      downArrBlack
+      downArrBlack,
     };
   },
   props: {
@@ -107,15 +67,15 @@ export default {
     isBtn: { type: String, default: "bg-gradient-light" },
     darkMode: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     darkModes() {
       return {
-        "text-dark": this.darkMode
+        "text-dark": this.darkMode,
       };
-    }
-  }
+    },
+  },
 };
 </script>

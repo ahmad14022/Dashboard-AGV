@@ -2,7 +2,7 @@
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-lg col-md-6 col-12">
-        <div class="card p-3">
+        <div class="card p-3 ngrok-port">
           <p class="font-weight-bold text-sm text-center mt-2">
             ADD NGROK PORT
           </p>
@@ -459,5 +459,11 @@ export default {
   background-color: rgb(157, 254, 124);
   padding: 0.5rem;
   border-radius: 0.5rem;
+}
+
+@media (max-width: 992px) {
+  .ngrok-port {
+    margin-bottom: 1.2rem;
+  }
 }
 </style>

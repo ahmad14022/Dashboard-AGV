@@ -4,12 +4,12 @@
       <div class="col-lg-12">
         <div class="row">
           <div class="col-lg col-md-4 col-6">
-            <div class="card d-flex flex-column">
-              <p class="font-weight-bold px-3 py-1 m-2 text-sm">
-                CONTROL & ATUR KECEPATAN
+            <div class="card">
+              <p class="font-weight-bold text-sm text-center mt-2">
+                CONTROL & SPEED SETTINGS
               </p>
               <div
-                class="card-body d-flex justify-content-around align-items-center mb-1 p-1"
+                class="d-flex justify-content-around align-items-center mb-2"
               >
                 <div @click="toggleAGV" class="pointer">
                   <i v-if="!agvOn" class="fas fa-play-circle fa-3x"></i>

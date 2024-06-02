@@ -28,11 +28,12 @@
       <li v-if="isLoggedIn" class="nav-item">
         <sidenav-item
           :url="isDashboardAgvLidar ? '/agv-lidar' : '/agv-line-follower'"
-          :class="{
+          :class="`{
             active: isDashboardAgvLidar
               ? $route.path === '/agv-lidar'
               : $route.path === '/agv-line-follower',
-          }"
+          } ${isSidebarClose ? 'show' : ''}`"
+          id="close"
           :navText="this.$store.state.isRTL ? 'لوحة القيادة' : 'AGV'"
           @click.native="navigateToAGV()"
         >
@@ -97,17 +98,6 @@
           </template>
         </sidenav-item>
       </li>
-      <!-- <li v-if="!isLoggedIn" class="nav-item">
-        <sidenav-item
-          url="/signup"
-          :class="getRoute() === 'signup' ? 'active' : ''"
-          :navText="this.$store.state.isRTL ? 'اشتراك' : 'Sign Up'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-collection text-info text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li> -->
       <li v-if="isLoggedIn" class="nav-item">
         <router-link to="/" class="nav-link" @click="logout">
           <i class="ni ni-user-run text-warning text-sm opacity-10"></i>
@@ -124,44 +114,6 @@
       textSecondary="Please check our docs"
     />
   </div>
-  <!-- Other menu items -->
-  <!-- <li class="nav-item">
-        <sidenav-item
-          url="/tables"
-          :class="getRoute() === 'tables' ? 'active' : ''"
-          :navText="this.$store.state.isRTL ? 'الجداول' : 'Tables'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li> -->
-
-  <!-- <li class="nav-item">
-        <sidenav-item
-          url="/todo"
-          :class="getRoute() === 'todo' ? 'active' : ''"
-          :navText="this.$store.state.isRTL ? 'الفواتیر' : 'XXXXXXX'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item">
-        <sidenav-item
-          url="/todo-form"
-          :class="getRoute() === 'todo-form' ? 'active' : ''"
-          navText="XXXXXXX"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-world-2 text-danger text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li> -->
-
-  <!-- Sidenav footer -->
 </template>
 
 <script>
@@ -184,6 +136,9 @@ export default {
     isDashboardAgvLidar() {
       return this.$route.path === "/dashboard-agv-lidar";
     },
+    isSidebarClose() {
+      return this.$store.state.isSidebarClose;
+    },
   },
   components: {
     SidenavItem,
@@ -200,13 +155,16 @@ export default {
       } else {
         this.$router.push("/dashboard-agv-line-follower");
       }
+      this.$store.commit("toggleSidebarClose");
     },
     navigateToAGV() {
       // Menavigasi kembali ke dashboard yang sesuai berdasarkan informasi terbaru
       if (this.currentDashboardType === "agv-lidar") {
         this.$router.push("/agv-lidar");
+        this.$store.commit("toggleSidebarClose");
       } else {
         this.$router.push("/agv-line-follower");
+        this.$store.commit("toggleSidebarClose");
       }
     },
     navigateToStation() {
@@ -216,6 +174,7 @@ export default {
       } else {
         this.$router.push("/station-agv-line-follower");
       }
+      this.$store.commit("toggleSidebarClose");
     },
 
     logout() {
@@ -236,3 +195,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@media(max-width: 992px) {
+  #close.show {
+    transform: translateX(0);
+  }
+}
+</style>

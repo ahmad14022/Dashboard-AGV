@@ -14,12 +14,19 @@ export default createStore({
     showNavs: true,
     showSidenav: true,
     showNavbar: true,
+    isSidebarOpen: true,
     showFooter: true,
     showMain: true,
     layout: "default",
     ngrokPort: '',
   },
   mutations: {
+    toggleSidebar(state) {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+    toggleSidebarClose(state) {
+      state.isSidebarOpen = false
+    },
     setNgrokPort(state, port) {
       state.ngrokPort = port;
       console.log(`Port set in Vuex: ${state.ngrokPort}`); // Debugging
