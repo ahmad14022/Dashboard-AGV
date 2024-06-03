@@ -245,7 +245,7 @@ export default {
 
       this.socket.onclose = () => {
         const toast = useToast();
-        toast.danger("Connection died");
+        console.log("Connection died");
       };
 
       this.socket.onerror = (error) => {
@@ -361,7 +361,7 @@ export default {
 
         // Reconnect WebSocket with the updated port
         if (this.socket) {
-          this.socket.close();
+          this.socket.onopen();
         }
         // this.connectWebSocket();
         toast.success(`PORT ${this.input.port} Successfully added`);

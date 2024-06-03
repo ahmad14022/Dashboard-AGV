@@ -6,15 +6,7 @@ const useAgvStore = defineStore({
   state: () => ({
     agvs: [],
   }),
-  getters: {
-    g$getAGVs(state) {
-      return state.agvs;
-    },
-    g$getDetail: ({ agvs }) => {
-      return (index) => agvs[index];
-    },
-  },
-
+  
   actions: {
     async a$addAGV(agvData) {
       try {
@@ -24,7 +16,7 @@ const useAgvStore = defineStore({
         throw error;
       }
     },
-
+    
     async a$getAGVs() {
       try {
         const agvs = await AGVService.getAGVs();
@@ -34,7 +26,7 @@ const useAgvStore = defineStore({
         throw error;
       }
     },
-
+    
     async a$editAGV({ id, updatedAGVData }) {
       try {
         await AGVService.updateAGV(id, updatedAGVData);
@@ -47,7 +39,7 @@ const useAgvStore = defineStore({
         throw error;
       }
     },
-
+    
     async a$deleteAGV(id) {
       try {
         await AGVService.deleteAGV(id)
@@ -57,7 +49,7 @@ const useAgvStore = defineStore({
         throw error;
       }
     },
-
+    
     async a$getAGVById(id) {
       try {
         return await AGVService.getAGVById(id);
@@ -65,6 +57,14 @@ const useAgvStore = defineStore({
         console.error("Error getting AGV by id:", error.message);
         throw error;
       }
+    },
+  },
+  getters: {
+    g$getAGVs(state) {
+      return state.agvs;
+    },
+    g$getDetail: ({ agvs }) => {
+      return (index) => agvs[index];
     },
   },
 });

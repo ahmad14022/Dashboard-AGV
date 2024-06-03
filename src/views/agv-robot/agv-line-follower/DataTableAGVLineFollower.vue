@@ -170,10 +170,6 @@ export default {
         await this.a$deleteAGV(idToRemove);
         await this.a$getAGVs();
         toast.success(`AGV with code ${row.code} deleted`);
-        // Jangan perlu mereset editing karena editing tidak berubah setelah penghapusan
-        // if (idToRemove === this.editing) {
-        //   this.editing = null;
-        // }
       } catch (error) {
         console.error("Failed to remove row:", error);
       }
