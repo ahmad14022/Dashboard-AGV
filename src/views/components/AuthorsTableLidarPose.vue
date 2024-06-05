@@ -95,12 +95,18 @@ export default {
 
 <template>
   <div class="container table-responsive">
-    <base-table-dashboard
-      class="table"
-      :data="taskData"
-      :columns="table.columns"
-      :actions="table.action"
-      @remove-row="handleRemoveEvent"
-    />
+    <div v-if="!taskData.length" class="text-center text-muted">
+      <img src="src/assets/img/robot-with-pliers.png" style="width: 10%" />
+      <h3 class="mb-4">Data Not Found</h3>
+    </div>
+    <div v-else>
+      <base-table-dashboard
+        class="table"
+        :data="taskData"
+        :columns="table.columns"
+        :actions="table.action"
+        @remove-row="handleRemoveEvent"
+      />
+    </div>
   </div>
 </template>

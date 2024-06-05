@@ -35,9 +35,7 @@ export default {
           const timeEnd = item.time_end
             ? moment(item.time_end).format("h:mm:ss a")
             : "";
-          const timeStart = moment(item.time_start).format(
-            "h:mm:ss a"
-          );
+          const timeStart = moment(item.time_start).format("h:mm:ss a");
 
           return {
             agv: item.agv.code,
@@ -61,7 +59,7 @@ export default {
     };
 
     socket.onclose = function (event) {
-      const toast = useToast()
+      const toast = useToast();
       if (event.wasClean) {
         toast.danger(
           `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
@@ -72,11 +70,9 @@ export default {
     };
 
     socket.onerror = function (error) {
-      const toast = useToast()
+      const toast = useToast();
       toast.danger(`[error]`);
     };
-
-    
   },
   components: {
     BaseTableDashboard,
@@ -87,12 +83,18 @@ export default {
 
 <template>
   <div class="container table-responsive">
-    <base-table-dashboard
-      class="table"
-      :data="taskData"
-      :columns="table.columns"
-      :actions="table.action"
-      @remove-row="handleRemoveEvent"
-    />
+    <div v-if="!taskData.length" class="text-center text-muted">
+      <img src="src/assets/img/robot-with-pliers.png" style="width: 30%" />
+      <h3 class="mb-4">Data Not Found</h3>
+    </div>
+    <div v-else>
+      <base-table-dashboard
+        class="table"
+        :data="taskData"
+        :columns="table.columns"
+        :actions="table.action"
+        @remove-row="handleRemoveEvent"
+      />
+    </div>
   </div>
 </template>

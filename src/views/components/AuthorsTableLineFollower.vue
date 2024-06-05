@@ -1,12 +1,18 @@
 <template>
   <div class="container table-responsive">
-    <base-table-dashboard
-      class="table"
-      :data="taskList"
-      :columns="table.columns"
-      :actions="table.action"
-      @remove-row="handleRemoveEvent"
-    />
+    <div v-if="!taskList" class="text-center text-muted">
+      <img src="src/assets/img/robot-with-pliers.png" style="width: 30%" />
+      <h3 class="mb-4">Data Not Found</h3>
+    </div>
+    <div v-else>
+      <base-table-dashboard
+        class="table"
+        :data="taskList"
+        :columns="table.columns"
+        :actions="table.action"
+        @remove-row="handleRemoveEvent"
+      />
+    </div>
   </div>
 </template>
 
@@ -16,7 +22,7 @@ import ArgonButton from "../../components/ArgonButton.vue";
 import BaseTableDashboard from "./BaseTableDashboard.vue";
 import moment from "moment";
 import { mapActions, mapState } from "pinia";
-import useTaskStore from "@/store/task.js"
+import useTaskStore from "@/store/task.js";
 
 export default {
   name: "ListView",
@@ -28,7 +34,7 @@ export default {
   }),
 
   created() {
-    this.getData();  
+    this.getData();
     const socket = new WebSocket(
       "wss://sans-agv.azurewebsites.net/ws/task/line"
     );
@@ -94,14 +100,16 @@ export default {
   computed: {
     ...mapState(useTaskStore, ["g$getTasks"]),
     taskList() {
-      return this.taskData.length ? this.taskData : this.formattedTasks(this.g$getTasks);
-    }
+      return this.taskData.length
+        ? this.taskData
+        : this.formattedTasks(this.g$getTasks);
+    },
   },
   methods: {
     ...mapActions(useTaskStore, ["a$getTasks", "a$deleteTask"]),
 
     async getData() {
-      await this.a$getTasks();  // Fetch tasks from the store
+      await this.a$getTasks(); // Fetch tasks from the store
     },
 
     formattedTasks(data) {
@@ -164,7 +172,7 @@ export default {
       } else {
         toast.error(message);
       }
-    }
+    },
   },
   components: {
     BaseTableDashboard,
