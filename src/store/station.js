@@ -5,16 +5,66 @@ const useStationStore = defineStore({
   id: "station",
   state: () => ({
     stations: [],
+    poses: [],
   }),
   getters: {
     g$getStations(state) {
       return state.stations;
+    },
+    g$getPoses(state) {
+      return state.poses;
     },
     g$getDetail: ({ stations }) => {
       return (index) => stations[index];
     },
   },
   actions: {
+    async a$addPose(pose) {
+      try {
+        await stationService.addPose(pose)
+      } catch (error) {
+        console.error("Error add pose", error.message);
+        throw error;
+      }
+    },
+
+    async a$getPoses() {
+      try {
+        const poses = await stationService.getPoses();
+        this.poses = poses.data;
+      } catch (error) {
+        console.error("Error fetching pose list:", error.message);
+        throw error;
+      }
+    },
+
+    async a$editPose({ id, updatedPoseData }) {
+      try {
+        await stationService.updateStation(id, updatedPoseData);
+        const index = this.poses.findIndex((pose) => pose._id === id);
+        if (index !== -1) {
+          this.poses[index] = updatedPoseData;
+        }
+      } catch (error) {
+        console.error("Error editing poses:", error.message);
+        throw error;
+      }
+    },
+
+    async a$deletePose(id) {
+      try {
+        await stationService.deletePose(id);
+        const index = this.poses.findIndex((pose) => pose._id === id);
+        if (index !== -1) {
+          this.poses.splice(index, 1);
+        }
+        console.log(`Pose with ID ${id} deleted.`);
+      } catch (error) {
+        console.error(`Error deleting pose with ID ${id}:`, error.message);
+        throw error;
+      }
+    },
+
     async a$addStation(stationData) {
       try {
         await stationService.addStation(stationData);

@@ -118,18 +118,6 @@ class StationService {
       });
   }
 
-  async getStationById(id) {
-    return axios
-      .get(API_URL + "/station/" + id)
-      .then((response) => {
-        console.log("Get Station by ID Response:", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Get Station by ID Error:", error);
-        throw error;
-      });
-  }
   async getPoses() {
     return axios
       .get(API_URL + "/pose")
@@ -143,28 +131,28 @@ class StationService {
       });
   }
 
-  async updateStation(id, updatedStation) {
+  async updatePose(id, updatedPose) {
     return axios
-      .put(API_URL + "/station/" + id, updatedStation)
+      .put(API_URL + "/pose/" + id, updatedPose)
       .then((response) => {
-        console.log("Update Station Response:", response.data);
+        console.log("Update Pose Response:", response.data);
         return response.data;
       })
       .catch((error) => {
-        console.error("Update Station Error:", error);
+        console.error("Update Pose Error:", error);
         throw error;
       });
   }
 
-  async deleteStation(id) {
+  async deletePose(id) {
     return axios
-      .delete(API_URL + "/station/" + id)
+      .delete(API_URL + "/pose/" + id)
       .then((response) => {
-        console.log("Delete Station Response:", response.data);
+        console.log("Delete Pose Response:", response.data);
         return response.data;
       })
       .catch((error) => {
-        console.error("Delete Station Error:", error);
+        console.error("Delete Pose Error:", error);
         throw error;
       });
   }

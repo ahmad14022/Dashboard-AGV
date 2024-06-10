@@ -16,7 +16,7 @@
         <ip-input
           v-model:show="modal.connectPORT"
           modal-classes="modal-lg"
-          @hidden="clearInputs"
+       
         >
           <template #header>
             <p class="modal-title">Enter NGROK Port</p>

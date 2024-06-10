@@ -166,10 +166,8 @@ export default {
       try {
         const idToRemove = row._id;
         await this.a$deleteAGV(idToRemove);
+        await this.a$getAGVs();
         toast.success(`AGV with code ${row.code} deleted`);
-        if (idToRemove === this.editing) {
-          this.editing = null;
-        }
       } catch (error) {
         console.error("Failed to remove row:", error);
       }
