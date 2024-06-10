@@ -52,8 +52,7 @@
             class="text-center button-cancel"
             color="danger"
             variant="gradient"
-            fullWidth
-            size="lg"
+            fullWidth 
           >
             Cancel
           </argon-button>
@@ -63,7 +62,6 @@
             color="success"
             variant="gradient"
             fullWidth
-            size="lg"
           >
             {{ editing !== null ? "Update" : "Add" }}
           </argon-button>
