@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="row">
-          <div class="col-lg col-md-4 col-6">
+          <div class="col-lg col-md-6 col-12 mb-4">
             <div class="card">
               <p class="font-weight-bold text-sm text-center mt-2">
                 CONTROL & SPEED SETTINGS
@@ -30,7 +30,7 @@
               </div>
             </div>
           </div>
-          <div class="col-lg col-md-6 col-6">
+          <div class="col-lg col-md-6 col-12">
             <card
               :title="stats.money.title"
               :value="stats.money.value"

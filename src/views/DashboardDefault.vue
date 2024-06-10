@@ -43,8 +43,8 @@
           </template>
         </ip-input>
       </div>
-      <div class="col-lg col-6">
-        <div class="card d-flex flex-row align-items-center">
+      <div class="col-lg col-md-6 col-12">
+        <div class="card d-flex flex-row align-items-center mb-4">
           <div>
             <p class="font-weight-bold px-3 text-sm">JOYSTICK CONTROL</p>
             <h5
@@ -66,8 +66,9 @@
               {{ direction }}
             </h5>
           </div>
-          <div class="card-body p-3">
+          <div class="card-body p-3 align-items-end">
             <Joystick
+            class=""
               :size="85"
               base-color="#FFDDDD"
               stick-color="#FF6565"
@@ -79,7 +80,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg col-md-6 col-6">
+      <div class="col-lg col-md-6 col-12  ">
         <card
           :title="stats.money.title"
           :value="stats.money.value"
