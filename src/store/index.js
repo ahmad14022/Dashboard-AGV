@@ -18,14 +18,15 @@ export default createStore({
     showFooter: true,
     showMain: true,
     layout: "default",
-    ngrokPort: '',
+    ngrokPort: "",
+    loading: true,
   },
   mutations: {
     toggleSidebar(state) {
       state.isSidebarOpen = !state.isSidebarOpen;
     },
     toggleSidebarClose(state) {
-      state.isSidebarOpen = false
+      state.isSidebarOpen = false;
     },
     setNgrokPort(state, port) {
       state.ngrokPort = port;
@@ -36,8 +37,9 @@ export default createStore({
     },
     navbarMinimize(state) {
       let sidenav_show = document.querySelector(".g-sidenav-show");
-    
-      if (sidenav_show) { // Pemeriksaan apakah elemen ditemukan
+
+      if (sidenav_show) {
+        // Pemeriksaan apakah elemen ditemukan
         if (sidenav_show.classList.contains("g-sidenav-hidden")) {
           sidenav_show.classList.remove("g-sidenav-hidden");
           sidenav_show.classList.add("g-sidenav-pinned");
@@ -49,7 +51,7 @@ export default createStore({
         }
       }
     },
-    
+
     sidebarType(state, payload) {
       state.sidebarType = payload;
     },
@@ -59,19 +61,27 @@ export default createStore({
       } else {
         state.isNavFixed = false;
       }
-    }
+    },
+
+    setLoading(state, loading) {
+      state.loading = loading;
+    },
   },
   actions: {
     toggleSidebarColor({ commit }, payload) {
       commit("sidebarType", payload);
     },
     setNgrokPort({ commit }, port) {
-      commit('setNgrokPort', port);
+      commit("setNgrokPort", port);
     },
-  },modules: {
+    setLoading({ commit }, loading) {
+      commit('setLoading', loading);
+    }
+  },
+  modules: {
     // auth,
   },
   getters: {
-    ngrokPort: state => state.ngrokPort
-  }
+    ngrokPort: (state) => state.ngrokPort,
+  },
 });

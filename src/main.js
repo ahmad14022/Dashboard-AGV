@@ -15,7 +15,7 @@ import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import VueDatepickerUi from 'vue-datepicker-ui'
 import 'vue-datepicker-ui/lib/vuedatepickerui.css';
-
+import '@/ServiceWorker';
 const appInstance = createApp(App);
 appInstance.use(createPinia());
 appInstance.use(store);
