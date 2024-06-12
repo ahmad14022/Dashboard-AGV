@@ -105,7 +105,7 @@
           <div class="card-body px-0 pt-1 pb-2 d-flex flex-column">
             <div class="pb-0 card-header">
               <div class="d-flex justify-content-between">
-                <h6 class="mb-2 bg-title">Data Pose AGV Lidar</h6>
+                <h6 class="mb-2 bg-title">Data Pose</h6>
                 <div class="d-flex gap-2">
                   <argon-button
                     :size="sm"
@@ -195,7 +195,7 @@
           >
             <div class="pb-0 card-header">
               <div class="d-flex justify-content-between align-items-center">
-                <h6 class="mb-2 bg-title">Data Task AGV</h6>
+                <h6 class="mb-2 bg-title">Data Task</h6>
                 <router-link to="/history-lidar-task" class="text-end">
                   See History <i class="fas fa-regular fa-clock"></i>
                 </router-link>

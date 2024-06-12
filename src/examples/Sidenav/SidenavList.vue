@@ -78,9 +78,10 @@
       </li>
       <li v-if="isLoggedIn" class="nav-item">
         <sidenav-item
-          url="/profile"
+        url="/profile"
           :class="getRoute() === 'profile' ? 'active' : ''"
           :navText="this.$store.state.isRTL ? 'حساب تعريفي' : 'Profile'"
+          @click.native="navigateToProfile()"
         >
           <template v-slot:icon>
             <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
@@ -174,6 +175,10 @@ export default {
       } else {
         this.$router.push("/station-agv-line-follower");
       }
+      this.$store.commit("toggleSidebarClose");
+    },
+    navigateToProfile() {
+      this.$router.push("/profile");
       this.$store.commit("toggleSidebarClose");
     },
 
