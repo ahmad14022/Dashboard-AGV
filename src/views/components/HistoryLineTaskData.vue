@@ -141,7 +141,7 @@ export default {
             class="text-center text-muted"
           >
             <img
-              src="src/assets/img/robot-with-pliers.png"
+              src="/src/assets/img/robot-with-pliers.png"
               style="width: 30%"
             />
             <h3 class="mb-4">Data Not Found</h3>
