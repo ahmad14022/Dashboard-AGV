@@ -20,7 +20,7 @@
           <!-- Add action buttons for each row -->
           <td>
             <!-- Remove button -->
-            <button class="button-table bg-gradient-success" @click="addRow(row)">
+            <!-- <button class="button-table bg-gradient-success" @click="addRow(row)">
               Read
             </button>
             <button class="button-table bg-gradient-success" @click="getRow(row)">
@@ -28,7 +28,7 @@
             </button>
             <button class="button-table orange" @click="editRow(row)">
               Write
-            </button>
+            </button> -->
             <button class="button-table red" @click="removeRow(row)">
               Remove
             </button>
@@ -61,9 +61,9 @@ export default {
       // Emit remove event with the selected row
       this.$emit("edit-row", row);
     },
-    deleteRow(row) {
+    removeRow(row) {
       // Emit remove event with the selected row
-      this.$emit("delete-row", row);
+      this.$emit("remove-row", row);
     },
     getRow(row) {
       // Emit remove event with the selected row

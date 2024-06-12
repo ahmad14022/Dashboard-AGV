@@ -21,7 +21,8 @@ const useStationStore = defineStore({
   actions: {
     async a$addPose(pose) {
       try {
-        await stationService.addPose(pose)
+        const response = await stationService.addPose(pose)
+        console.log("response add pose", response)
       } catch (error) {
         console.error("Error add pose", error.message);
         throw error;
@@ -31,7 +32,8 @@ const useStationStore = defineStore({
     async a$getPoses() {
       try {
         const poses = await stationService.getPoses();
-        this.poses = poses.data;
+        this.poses = poses.data
+        console.log("ini data poses:", poses)
       } catch (error) {
         console.error("Error fetching pose list:", error.message);
         throw error;

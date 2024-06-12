@@ -13,11 +13,7 @@
             <i class="fas fa-plus" style="margin-left: 5px"></i>
           </argon-button>
         </div>
-        <ip-input
-          v-model:show="modal.connectPORT"
-          modal-classes="modal-lg"
-       
-        >
+        <ip-input v-model:show="modal.connectPORT" modal-classes="modal-lg">
           <template #header>
             <p class="modal-title">Enter NGROK Port</p>
           </template>
@@ -68,7 +64,6 @@
           </div>
           <div class="card-body p-3 align-items-end">
             <Joystick
-            class=""
               :size="85"
               base-color="#FFDDDD"
               stick-color="#FF6565"
@@ -80,7 +75,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg col-md-6 col-12  ">
+      <div class="col-lg col-md-6 col-12">
         <card
           :title="stats.money.title"
           :value="stats.money.value"
@@ -109,8 +104,81 @@
         <div class="card">
           <div class="card-body px-0 pt-1 pb-2 d-flex flex-column">
             <div class="pb-0 card-header">
-              <div class="d-flex justify-content-between ">
+              <div class="d-flex justify-content-between">
                 <h6 class="mb-2 bg-title">Data Pose AGV Lidar</h6>
+                <div class="d-flex gap-2">
+                  <argon-button
+                    :size="sm"
+                    class="button-read bg-gradient-success"
+                    @click="modal.displayPose = true"
+                    ><span class="switch-button-text">Read</span>
+                    <i class="fas fa-plus" style="margin-left: 7px"></i
+                  ></argon-button>
+                  <ip-input
+                    v-model:show="modal.displayPose"
+                    modal-classes="modal-lg"
+                  >
+                    <template #header>
+                      <p class="modal-title">Your Data AGV Lidar Pose</p>
+                    </template>
+                    <template #body>
+                      <form @submit.prevent="addPORT">
+                        <base-input
+                          v-model="input.code"
+                          name="Pose Code"
+                          class="input"
+                          placeholder="Enter Code Pose"
+                          required
+                        ></base-input>
+                        <base-input
+                          v-model="input.x"
+                          name="Pose X"
+                          class="input"
+                          placeholder="Enter Pose X"
+                          required
+                        ></base-input>
+                        <base-input
+                          v-model="input.y"
+                          name="Pose Y"
+                          class="input"
+                          placeholder="Enter Pose Y"
+                          required
+                        ></base-input>
+                        <base-input
+                          v-model="input.z"
+                          name="Pose Z"
+                          class="input"
+                          placeholder="Enter Pose Z"
+                          required
+                        ></base-input>
+                        <base-input
+                          v-model="input.w"
+                          name="Pose W"
+                          class="input"
+                          placeholder="Enter Pose W"
+                          required
+                        ></base-input>
+                      </form>
+                      <p>
+                        After Save The Data Pose Will Add in Data Pose AGV Lidar
+                      </p>
+                    </template>
+                    <template #footer>
+                      <argon-button
+                        class="bg-gradient-success"
+                        @click="addPose"
+                      >
+                        <span v-if="!loading">Save</span>
+                        <span v-else>
+                          <i class="fa fa-spinner fa-spin"></i> Connecting...
+                        </span>
+                      </argon-button>
+                    </template>
+                  </ip-input>
+                  <!-- <argon-button size="md" color="success" variant="gradient">
+                    Save
+                  </argon-button> -->
+                </div>
               </div>
             </div>
             <authors-table-lidar-pose />
@@ -122,7 +190,9 @@
     <div class="row">
       <div class="col-lg-12 mb-lg mb-3">
         <div class="card">
-          <div class="card-body px-0 pt-1 pb-2 d-flex flex-column justify-content-center">
+          <div
+            class="card-body px-0 pt-1 pb-2 d-flex flex-column justify-content-center"
+          >
             <div class="pb-0 card-header">
               <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-2 bg-title">Data Task AGV</h6>
@@ -153,8 +223,10 @@ import axios from "axios";
 import { useToast } from "vue-toastification";
 import ArgonButton from "../components/ArgonButton.vue";
 import IpInput from "./components/IpInput.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions as vuexMapActions, mapState } from "vuex";
 import BaseInput from "./components/BaseInput.vue";
+import { mapActions as piniaMapActions } from "pinia";
+import useStationStore from "../store/station";
 
 export default {
   name: "dashboard-agv-lidar",
@@ -162,9 +234,15 @@ export default {
     return {
       modal: {
         connectPORT: false,
+        displayPose: false,
       },
       input: {
         port: "",
+        code: "",
+        x: "",
+        y: "",
+        z: "",
+        w: "",
       },
       status: "",
       direction: "",
@@ -222,7 +300,8 @@ export default {
     this.fetchPoseData();
   },
   methods: {
-    ...mapActions(["setNgrokPort"]),
+    ...vuexMapActions(["setNgrokPort", "fetchPoseData"]),
+    ...piniaMapActions(useStationStore, ["a$addPose", "a$getPoses"]),
     connectWebSocket() {
       const self = this;
       this.socket = new WebSocket(
@@ -330,15 +409,18 @@ export default {
           } else {
             this.stats.money.value = stationData.length.toString();
             const stationDetails = stationData.map((station) => station.code);
-            if (stationDetails.length > 2) {
-              const firstTwoStations = stationDetails.slice(0, 2);
-              const remainingStations = stationDetails.slice(2);
-              const formattedDetail = `${firstTwoStations.join(", ")} & ${
-                remainingStations[0]
-              }`;
-              this.stats.money.detail = formattedDetail;
-            } else {
+
+            if (stationDetails.length === 1) {
+              this.stats.money.detail = stationDetails[0];
+            } else if (stationDetails.length === 2) {
               this.stats.money.detail = stationDetails.join(" & ");
+            } else if (stationDetails.length === 3) {
+              this.stats.money.detail = stationDetails.join(", ");
+            } else {
+              const firstThreeStations = stationDetails.slice(0, 3);
+              const remainingStations = stationDetails.slice(3);
+              const formattedDetail = `${firstThreeStations.join(", ")}, ...`;
+              this.stats.money.detail = formattedDetail;
             }
           }
         })
@@ -346,6 +428,7 @@ export default {
           console.error("Error fetching Station data:", error);
         });
     },
+
     connectToRobot() {
       this.modal.connectPORT = true;
     },
@@ -367,6 +450,38 @@ export default {
         // this.connectWebSocket();
         toast.success(`PORT ${this.input.port} Successfully added`);
       }, 1000);
+    },
+    async addPose() {
+      try {
+        const toast = useToast();
+        this.loading = true;
+
+        // Validasi input sebelum mengirim
+        if (
+          !this.input.code ||
+          !this.input.x ||
+          !this.input.y ||
+          !this.input.z ||
+          !this.input.w
+        ) {
+          toast.error("Mohon lengkapi semua input.");
+          this.loading = false;
+          return;
+        }
+
+        // Mengirim data ke a$addPose
+        await this.a$addPose(this.input);
+        this.fetchPoseData()
+        await this.a$getPoses();
+        toast.success(`${this.input.code} Added Successfully`);
+
+        this.loading = false;
+        this.modal.displayPose = false;
+      } catch (err) {
+        console.error("Error adding pose:", err);
+        toast.error("Error adding pose");
+        this.loading = false;
+      }
     },
   },
   components: {
@@ -456,6 +571,10 @@ export default {
   color: orange;
 }
 
+.switch-button-text {
+  display: inline-block;
+}
+
 .bg-title {
   background-color: rgb(157, 254, 124);
   padding: 0.5rem;
@@ -465,6 +584,24 @@ export default {
 @media (max-width: 992px) {
   .ngrok-port {
     margin-bottom: 1.2rem;
+  }
+  .switch-button-text {
+    display: none;
+  }
+  .button-read {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    font-size: 1.2rem;
+    color: #007bff !important;
+  }
+
+  .button-read:hover,
+  .button-read:active,
+  .button-read:focus {
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 }
 </style>

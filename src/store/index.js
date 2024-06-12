@@ -1,7 +1,7 @@
 import { createStore } from "vuex";
 
 export default createStore({
-  state: {
+  state: {   
     hideConfigButton: false,
     isPinned: true,
     showConfig: false,
@@ -30,7 +30,7 @@ export default createStore({
     },
     setNgrokPort(state, port) {
       state.ngrokPort = port;
-      console.log(`Port set in Vuex: ${state.ngrokPort}`); // Debugging
+      console.log(`Port set in Vuex: ${state.ngrokPort}`);
     },
     toggleConfigurator(state) {
       state.showConfig = !state.showConfig;
