@@ -1,4 +1,3 @@
-<!-- Membuat ahlaman profile yang menampilkan data user yang sedang login dengan cara mengambil data dari cookie berupa anma dan username -->
 <template>
   <main>
     <div class="container-fluid">
@@ -25,11 +24,6 @@
               <p class="mb-0 font-weight-bold text-sm">{{ username }}</p>
             </div>
           </div>
-          <div
-            class="mx-auto mt-3 col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0"
-          >
-            
-          </div>
         </div>
       </div>
     </div>
@@ -37,7 +31,6 @@
       <div class="row">
         <div class="col-md-12">
           <div class="card">
-            <!-- <form @submit.prevent="updateProfile"> -->
             <div class="card-body">
               <p class="text-uppercase font-weight-bold">User Information</p>
               <div class="row">
@@ -99,7 +92,6 @@
                   <div class="d-flex">
                     <div class="w-100">
                       <argon-input
-                       
                         :type="confirmPasswordVisible ? 'text' : 'password'"
                         :disable="isDisabled"
                         v-model="confirmPassword"
@@ -125,33 +117,25 @@
                       </button>
                     </div>
                   </div>
-                  <!-- <p v-if="password !== confirmPassword" class="text-danger">Passwords do not match.</p> -->
                 </div>
-                
-                </div>
-                <argon-button
-                  color="success"
-                  size="md"
-                  class="w-100 my-3"                 
-                  @click="saveChanges"
-                >
-                  {{ isDisabled ? "Edit" : "Save" }}
-                </argon-button>
+              </div>
+              <argon-button
+                color="success"
+                size="md"
+                class="w-100 my-3"
+                @click="saveChanges"
+              >
+                {{ isDisabled ? "Edit" : "Save" }}
+              </argon-button>
             </div>
-            <!-- </form> -->
           </div>
         </div>
-        <!-- <div class="col-md-4">
-          <profile-card />
-        </div> -->
       </div>
     </div>
   </main>
 </template>
 
 <script>
-import setNavPills from "@/assets/js/nav-pills.js";
-import setTooltip from "@/assets/js/tooltip.js";
 import ProfileCard from "./components/ProfileCard.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
@@ -237,8 +221,6 @@ export default {
 
   mounted() {
     this.$store.state.isAbsolute = true;
-    setNavPills();
-    setTooltip();
     this.name = Cookies.get("name");
     this.username = Cookies.get("username");
     this.password = Cookies.get("password");
