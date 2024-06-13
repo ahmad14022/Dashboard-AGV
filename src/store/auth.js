@@ -8,11 +8,6 @@ const useAuthStore = defineStore({
     status: { loggedIn: false },
   }),
 
-  getters: {
-    g$user: ({ id, username }) => ({ id, username }),
-    isLoggedIn: ({ id }) => !!id,
-  },
-
   actions: {
     async a$login(body) {
       try {
@@ -46,6 +41,11 @@ const useAuthStore = defineStore({
         throw error;
       }
     },
+  },
+
+  getters: {
+    g$user: ({ id, username }) => ({ id, username }),
+    isLoggedIn: ({ id }) => !!id,
   },
 });
 
