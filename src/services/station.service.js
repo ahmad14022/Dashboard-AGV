@@ -1,6 +1,6 @@
-import axios from "axios"; // import axios untuk membuat request HTTP
+import axios from "axios";
 
-const API_URL = "https://sans-agv.azurewebsites.net/api"; // dekalarasi variabel API URL untuk api agv
+const API_URL = "https://sans-agv.azurewebsites.net/api";
 
 class StationService {
   constructor() {

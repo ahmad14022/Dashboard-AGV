@@ -10,7 +10,8 @@ const useAgvStore = defineStore({
   actions: {
     async a$addAGV(agvData) {
       try {
-        await AGVService.addAGV(agvData);
+        const response = await AGVService.addAGV(agvData);
+        console.log("ini add:", response)
       } catch (error) {
         console.error("Error adding AGV:", error.message);
         throw error;
@@ -20,6 +21,7 @@ const useAgvStore = defineStore({
     async a$getAGVs() {
       try {
         const agvs = await AGVService.getAGVs();
+        console.log("ini get:", agvs)
         this.agvs = agvs.data;
       } catch (error) {
         console.error("Error fetching AGV list:", error.message);

@@ -1,8 +1,8 @@
 <template>
   <div class="container table-responsive">
     <div v-if="!taskList" class="text-center text-muted">
-      <img src="/src/assets/img/robot-with-pliers.png" style="width: 30%" />
-      <h3 class="mb-4">Data Not Found</h3>
+      <img src="/src/assets/img/robot-with-pliers.png"  class="not-found-data" />
+      <h3 class="mb-4 author-title">Data Not Found</h3>
     </div>
     <div v-else>
       <base-table-dashboard
@@ -180,3 +180,25 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.author-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.not-found-data {
+  width: 30%;
+}
+
+@media (max-width: 992px) {
+  .author-title {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .not-found-data {
+    width: 60%;
+  }
+}
+</style>

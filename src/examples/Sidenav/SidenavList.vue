@@ -26,40 +26,50 @@
       </li>
 
       <li v-if="isLoggedIn" class="nav-item">
-        <sidenav-item
-          :url="isDashboardAgvLidar ? '/agv-lidar' : '/agv-line-follower'"
-          :class="`{
-            active: isDashboardAgvLidar
-              ? $route.path === '/agv-lidar'
-              : $route.path === '/agv-line-follower',
-          } ${isSidebarClose ? 'show' : ''}`"
-          id="close"
-          :navText="this.$store.state.isRTL ? 'لوحة القيادة' : 'AGV'"
-          @click.native="navigateToAGV()"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-delivery-fast text-primary text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-        <sidenav-item
-          :url="
-            isDashboardAgvLidar
-              ? '/station-agv-lidar'
-              : '/station-agv-line-follower'
-          "
-          :class="{
-            active: isDashboardAgvLidar
-              ? $route.path === '/station-agv-lidar'
-              : $route.path === '/station-agv-line-follower',
-          }"
-          :navText="this.$store.state.isRTL ? 'لوحة القيادة' : 'Station'"
-          @click.native="navigateToStation()"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-app text-primary text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
+  <sidenav-item
+    :url="isDashboardAgvLidar ? '/agv-lidar' : '/agv-line-follower'"
+    :class="`{
+      active: isDashboardAgvLidar
+        ? $route.path === '/agv-lidar'
+        : $route.path === '/agv-line-follower',
+    } ${isSidebarClose ? 'show' : ''}`"
+    id="close"
+    :navText="this.$store.state.isRTL ? 'لوحة القيادة' : 'AGV'"
+    @click.native="navigateToAGV()"
+  >
+    <template v-slot:icon>
+      <i class="ni ni-delivery-fast text-primary text-sm opacity-10"></i>
+    </template>
+  </sidenav-item>
+  <!-- Sembunyikan menu "Station" jika isDashboardAgvLidar adalah true -->
+  <sidenav-item
+    v-if="isLoggedIn && !isDashboardAgvLidar && getRoute() !== 'profile'"  
+    :url="'/station-agv-line-follower'"
+    :class="{
+      active: $route.path === '/station-agv-line-follower',
+    }"
+    :navText="this.$store.state.isRTL ? 'لوحة القيادة' : 'Station'"
+    @click.native="navigateToStation()"
+  >
+    <template v-slot:icon>
+      <i class="ni ni-app text-primary text-sm opacity-10"></i>
+    </template>
+  </sidenav-item>
+  <sidenav-item
+    v-else  
+    :url="'/station-agv-line-follower'"
+    :class="{
+      active: $route.path === '/station-agv-line-follower',
+    }"
+    :navText="this.$store.state.isRTL ? 'لوحة القيادة' : 'Station'"
+    @click.native="navigateToStation()"
+  >
+    <template v-slot:icon>
+      <i class="ni ni-app text-primary text-sm opacity-10"></i>
+    </template>
+  </sidenav-item>
+</li>
+
       <li class="mt-3 nav-item">
         <h6
           v-if="this.$store.state.isRTL"
@@ -78,7 +88,7 @@
       </li>
       <li v-if="isLoggedIn" class="nav-item">
         <sidenav-item
-        url="/profile"
+          url="/profile"
           :class="getRoute() === 'profile' ? 'active' : ''"
           :navText="this.$store.state.isRTL ? 'حساب تعريفي' : 'Profile'"
           @click.native="navigateToProfile()"
@@ -88,6 +98,7 @@
           </template>
         </sidenav-item>
       </li>
+
       <li v-if="!isLoggedIn" class="nav-item">
         <sidenav-item
           url="/signin"
@@ -135,7 +146,10 @@ export default {
   },
   computed: {
     isDashboardAgvLidar() {
-      return this.$route.path === "/dashboard-agv-lidar";
+      return (
+        this.$route.path === "/dashboard-agv-lidar" ||
+        this.$route.path === "/agv-lidar"
+      );
     },
     isSidebarClose() {
       return this.$store.state.isSidebarClose;
@@ -169,12 +183,8 @@ export default {
       }
     },
     navigateToStation() {
-      // Menavigasi kembali ke dashboard yang sesuai berdasarkan informasi terbaru
-      if (this.currentDashboardType === "agv-lidar") {
-        this.$router.push("/station-agv-lidar");
-      } else {
-        this.$router.push("/station-agv-line-follower");
-      }
+      // Menavigasi ke halaman station AGV Line Follower
+      this.$router.push("/station-agv-line-follower");
       this.$store.commit("toggleSidebarClose");
     },
     navigateToProfile() {
@@ -191,9 +201,15 @@ export default {
   watch: {
     // Memperbarui jenis dashboard saat rute berubah
     $route(to, from) {
-      if (to.path === "/dashboard-agv-lidar") {
+      if (
+        to.path === "/dashboard-agv-lidar" ||
+        to.path.startsWith("/agv-lidar")
+      ) {
         this.currentDashboardType = "agv-lidar";
-      } else if (to.path === "/dashboard-agv-line-follower") {
+      } else if (
+        to.path === "/dashboard-agv-line-follower" ||
+        to.path.startsWith("/agv-line-follower")
+      ) {
         this.currentDashboardType = "agv-line-follower";
       }
     },
@@ -202,7 +218,7 @@ export default {
 </script>
 
 <style scoped>
-@media(max-width: 992px) {
+@media (max-width: 992px) {
   #close.show {
     transform: translateX(0);
   }

@@ -117,9 +117,9 @@ export default {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="py-2 container-fluid">
     <div class="text-center mb-5">
-      <h2 class="text-white">Data Task AGV Line Follower</h2>
+      <h2 class="text-white title-history">Data Task AGV Line Follower</h2>
     </div>
     <div class="d-flex justify-content-end align-items-center">
       <div>
@@ -141,10 +141,10 @@ export default {
             class="text-center text-muted"
           >
             <img
+              class="not-found-data"
               src="/src/assets/img/robot-with-pliers.png"
-              style="width: 30%"
             />
-            <h3 class="mb-4">Data Not Found</h3>
+            <p class="author-title mb-4">Data Not Found</p>
           </div>
           <base-table-dashboard
             v-else
@@ -170,5 +170,28 @@ export default {
   flex-direction: row;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.author-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.not-found-data {
+  width: 30%;
+}
+
+@media (max-width: 992px) {
+  .title-history {
+    margin-top: 1rem;
+  }
+  .author-title {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .not-found-data {
+    width: 60%;
+  }
 }
 </style>

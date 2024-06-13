@@ -4,7 +4,11 @@
       <div class="col-lg col-md-6 col-12">
         <div class="card p-3 ngrok-port">
           <p class="font-weight-bold text-sm text-center mt-2">
-            ADD NGROK PORT
+            {{
+              ngrokPort
+                ? `YOUR NGROK PORT: ${ngrokPort}`
+                : "ADD YOUR NGROK PORT"
+            }}
           </p>
           <argon-button
             @click="modal.connectPORT = true"
@@ -436,20 +440,13 @@ export default {
       const toast = useToast();
       this.loading = true;
 
+      // Simulate API call to add the port
       setTimeout(() => {
         this.setNgrokPort(this.input.port);
-        console.log(`Port set to: ${this.input.port}`);
-
         this.loading = false;
         this.modal.connectPORT = false;
-
-        // Reconnect WebSocket with the updated port
-        if (this.socket) {
-          this.socket.onopen();
-        }
-        // this.connectWebSocket();
-        toast.success(`PORT ${this.input.port} Successfully added`);
-      }, 1000);
+        toast.success(`Port ${this.input.port} added successfully.`);
+      }, 2000);
     },
     async addPose() {
       try {
@@ -471,7 +468,7 @@ export default {
 
         // Mengirim data ke a$addPose
         await this.a$addPose(this.input);
-        this.fetchPoseData()
+        this.fetchPoseData();
         await this.a$getPoses();
         toast.success(`${this.input.code} Added Successfully`);
 
@@ -586,14 +583,14 @@ export default {
     margin-bottom: 1.2rem;
   }
   .switch-button-text {
-    display: none;
+    color: #344767;
   }
   .button-read {
     background: none !important;
     box-shadow: none !important;
     border: none !important;
-    font-size: 1.2rem;
-    color: #007bff !important;
+    font-size: 1rem;
+    color: #344767 !important;
   }
 
   .button-read:hover,
@@ -602,6 +599,7 @@ export default {
     background: none !important;
     box-shadow: none !important;
     outline: none !important;
+    color: #344767 !important;
   }
 }
 </style>
