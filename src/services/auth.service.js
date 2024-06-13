@@ -1,7 +1,5 @@
-// Membuat service yang berisi method untuk authentication
 import axios from "axios";
 import Cookies from "js-cookie";
-//const API_URL = import.meta.env.VITE_BASE_URL;
 const API_URL = "https://sans-agv.azurewebsites.net/api";
 
 class AuthService {
@@ -36,7 +34,7 @@ class AuthService {
     );
   }
 
-  login(user) {
+  async login(user) {
     return axios
       .post(API_URL + "/auth/signin", {
         username: user.username,
@@ -57,14 +55,14 @@ class AuthService {
       });
   }
 
-  logout() {
+  async logout() {
     Cookies.remove("user");
     Cookies.remove("username");
     Cookies.remove("name");
     Cookies.remove("jwt-token");
   }
 
-  register(user) {
+  async register(user) {
     return axios
       .post(API_URL + "/auth/signup", {
         name: user.name,
@@ -81,7 +79,7 @@ class AuthService {
       });
   }
 
-  updateProfile(user) {
+  async updateProfile(user) {
     return axios
       .post(API_URL + "/user", {
         name: user.name,
