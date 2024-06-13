@@ -37,7 +37,7 @@
             <argon-button class="bg-gradient-success" @click="addPORT">
               <span v-if="!loading">Add</span>
               <span v-else>
-                <i class="fa fa-spinner fa-spin"></i> Connecting...
+                <i class="fa fa-spinner fa-spin"></i> Loading...
               </span>
             </argon-button>
           </template>
@@ -81,28 +81,27 @@
       </div>
       <div class="col-lg col-md-6 col-12">
         <card
-          :title="stats.money.title"
-          :value="stats.money.value"
-          :percentage="stats.money.percentage"
-          :iconClass="stats.money.iconClass"
-          :iconBackground="stats.money.iconBackground"
-          :detail="stats.money.detail"
+          :title="stats.pose.title"
+          :value="stats.pose.value"
+          :percentage="stats.pose.percentage"
+          :iconClass="stats.pose.iconClass"
+          :iconBackground="stats.pose.iconBackground"
+          :detail="stats.pose.detail"
           directionReverse
         ></card>
       </div>
       <div class="col-lg col-md-6 col-12">
         <card
-          :title="stats.users.title"
-          :value="stats.users.value"
-          :percentage="stats.users.percentage"
-          :iconClass="stats.users.iconClass"
-          :iconBackground="stats.users.iconBackground"
-          :detail="stats.users.detail"
+          :title="stats.agv.title"
+          :value="stats.agv.value"
+          :percentage="stats.agv.percentage"
+          :iconClass="stats.agv.iconClass"
+          :iconBackground="stats.agv.iconBackground"
+          :detail="stats.agv.detail"
           directionReverse
         ></card>
       </div>
     </div>
-
     <div class="row">
       <div class="col-lg-12 mb-lg mb-3">
         <div class="card">
@@ -179,9 +178,6 @@
                       </argon-button>
                     </template>
                   </ip-input>
-                  <!-- <argon-button size="md" color="success" variant="gradient">
-                    Save
-                  </argon-button> -->
                 </div>
               </div>
             </div>
@@ -190,7 +186,6 @@
         </div>
       </div>
     </div>
-
     <div class="row">
       <div class="col-lg-12 mb-lg mb-3">
         <div class="card">
@@ -215,10 +210,7 @@
 
 <script>
 import Card from "@/examples/Cards/Card.vue";
-import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
 import Carousel from "./components/Carousel.vue";
-import CategoriesCard from "./components/CategoriesCard.vue";
-import ROSLIB from "roslib";
 import BaseTableDashboard from "./components/BaseTableDashboard.vue";
 import AuthorsTableLidar from "./components/AuthorsTableLidar.vue";
 import AuthorsTableLidarPose from "./components/AuthorsTableLidarPose.vue";
@@ -262,38 +254,33 @@ export default {
       agvOn: false,
       loading: false,
       stats: {
-        on_off: {
-          title: "Status Robot",
-          value: "fas fa-power-off",
-          iconBackground: "fas fa-power-off",
-        },
-        money: {
+        pose: {
           title: "Jumlah Pose",
           value: "0",
-          percentage: "",
           iconClass: "ni ni-square-pin",
           detail: "Pose",
           iconBackground: "bg-gradient-primary",
         },
-        users: {
+        agv: {
           title: "Jumlah AGV",
           value: "0",
-          percentage: "",
           iconClass: "ni ni-delivery-fast",
           iconBackground: "bg-gradient-secondary",
           detail: "AGV",
         },
-        clients: {
-          title: "PORT NGROK",
-          value: "0",
-          percentage: "",
-          iconClass: "ni ni-spaceship",
-          percentageColor: "text-danger",
-          iconBackground: "bg-gradient-danger",
-          detail: "every control",
-        },
       },
     };
+  },
+  components: {
+    Card,
+    Carousel,
+    BaseTableDashboard,
+    AuthorsTableLidar,
+    AuthorsTableLidarPose,
+    Joystick,
+    ArgonButton,
+    IpInput,
+    BaseInput,
   },
   computed: {
     ...mapState(["ngrokPort"]),
@@ -377,54 +364,40 @@ export default {
         console.error("WebSocket connection is not open");
       }
     },
-    fetchAGVData() {
-      axios
-        .get("https://sans-agv.azurewebsites.net/api/agv")
-        .then((response) => {
-          const agvData = response.data.data;
-          if (agvData.length === 0) {
-            this.stats.users.detail = "AGV";
-          } else {
-            this.stats.users.value = agvData.length.toString();
-            const agvDetails = agvData.map((agv) => agv.code);
-            if (agvDetails.length > 2) {
-              const firstTwoAGVs = agvDetails.slice(0, 2);
-              const remainingAGVs = agvDetails.slice(2);
-              const formattedDetail = `${firstTwoAGVs.join(", ")} & ${
-                remainingAGVs[0]
-              }`;
-              this.stats.users.detail = formattedDetail;
-            } else {
-              this.stats.users.detail = agvDetails.join(" & ");
-            }
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching AGV data:", error);
-        });
+    addPORT() {
+      const toast = useToast();
+      this.loading = true;
+      setTimeout(() => {
+        this.setNgrokPort(this.input.port);
+        this.loading = false;
+        this.modal.connectPORT = false;
+        this.resetForm();
+        toast.success(`Port ${this.input.port} added successfully.`);
+      }, 2000);
     },
+    // FETCH DATA FOR POSE
     fetchPoseData() {
       axios
         .get("https://sans-agv.azurewebsites.net/api/pose")
         .then((response) => {
           const stationData = response.data.data;
           if (stationData.length === 0) {
-            this.stats.money.detail = "Station";
+            this.stats.pose.detail = "Station";
           } else {
-            this.stats.money.value = stationData.length.toString();
+            this.stats.pose.value = stationData.length.toString();
             const stationDetails = stationData.map((station) => station.code);
 
             if (stationDetails.length === 1) {
-              this.stats.money.detail = stationDetails[0];
+              this.stats.pose.detail = stationDetails[0];
             } else if (stationDetails.length === 2) {
-              this.stats.money.detail = stationDetails.join(" & ");
+              this.stats.pose.detail = stationDetails.join(" & ");
             } else if (stationDetails.length === 3) {
-              this.stats.money.detail = stationDetails.join(", ");
+              this.stats.pose.detail = stationDetails.join(", ");
             } else {
               const firstThreeStations = stationDetails.slice(0, 3);
               const remainingStations = stationDetails.slice(3);
               const formattedDetail = `${firstThreeStations.join(", ")}, ...`;
-              this.stats.money.detail = formattedDetail;
+              this.stats.pose.detail = formattedDetail;
             }
           }
         })
@@ -432,28 +405,47 @@ export default {
           console.error("Error fetching Station data:", error);
         });
     },
-
-    connectToRobot() {
-      this.modal.connectPORT = true;
+    // FETCH DATA FOR CARD AGV
+    fetchAGVData() {
+      axios
+        .get("https://sans-agv.azurewebsites.net/api/agv")
+        .then((response) => {
+          const agvData = response.data.data;
+          if (agvData.length === 0) {
+            this.stats.agv.detail = "AGV";
+          } else {
+            this.stats.agv.value = agvData.length.toString();
+            const agvDetails = agvData.map((agv) => agv.code);
+            if (agvDetails.length > 2) {
+              const firstTwoAGVs = agvDetails.slice(0, 2);
+              const remainingAGVs = agvDetails.slice(2);
+              const formattedDetail = `${firstTwoAGVs.join(", ")} & ${
+                remainingAGVs[0]
+              }`;
+              this.stats.agv.detail = formattedDetail;
+            } else {
+              this.stats.agv.detail = agvDetails.join(" & ");
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching AGV data:", error);
+        });
     },
-    addPORT() {
-      const toast = useToast();
-      this.loading = true;
-
-      // Simulate API call to add the port
-      setTimeout(() => {
-        this.setNgrokPort(this.input.port);
-        this.loading = false;
-        this.modal.connectPORT = false;
-        toast.success(`Port ${this.input.port} added successfully.`);
-      }, 2000);
+    resetForm() {
+      this.input = {
+        port: "",
+        code: "",
+        x: "",
+        y: "",
+        z: "",
+        w: "",
+      };
     },
     async addPose() {
       try {
         const toast = useToast();
         this.loading = true;
-
-        // Validasi input sebelum mengirim
         if (
           !this.input.code ||
           !this.input.x ||
@@ -466,14 +458,13 @@ export default {
           return;
         }
 
-        // Mengirim data ke a$addPose
         await this.a$addPose(this.input);
         this.fetchPoseData();
         await this.a$getPoses();
-        toast.success(`${this.input.code} Added Successfully`);
-
+        this.resetForm();
         this.loading = false;
         this.modal.displayPose = false;
+        toast.success(`${this.input.code} Added Successfully`);
       } catch (err) {
         console.error("Error adding pose:", err);
         toast.error("Error adding pose");
@@ -481,85 +472,23 @@ export default {
       }
     },
   },
-  components: {
-    Card,
-    Carousel,
-    GradientLineChart,
-    BaseTableDashboard,
-    AuthorsTableLidar,
-    AuthorsTableLidarPose,
-    Joystick,
-    ArgonButton,
-    IpInput,
-    BaseInput,
+
+  watch: {
+    "modal.connectPORT"(newValue) {
+      if (!newValue) {
+        this.resetForm();
+      }
+    },
+    "modal.displayPose"(newValue) {
+      if (!newValue) {
+        this.resetForm();
+      }
+    },
   },
 };
 </script>
 
 <style>
-.lidar-row {
-  display: flex;
-}
-
-.lidar-cell {
-  width: 10px;
-  height: 10px;
-}
-
-.lidar-cell.obstacle {
-  background-color: red;
-}
-
-.lidar-cell.free {
-  background-color: green;
-}
-
-.card-bg {
-  background: rgb(158, 242, 255);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-}
-
-.speed-input {
-  margin-top: 20px;
-}
-
-.speed-input h5 {
-  margin-bottom: 10px;
-}
-
-.speed-input label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.speed-input input[type="range"] {
-  width: 100%;
-  -webkit-appearance: none;
-  background-color: #ddd;
-  height: 5px;
-  border-radius: 5px;
-  outline: none;
-}
-
-.speed-input input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  background-color: #007bff;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.speed-input input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background-color: #007bff;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
 .text-start {
   color: green;
 }
