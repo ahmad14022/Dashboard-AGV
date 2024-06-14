@@ -7,18 +7,8 @@ const useStationStore = defineStore({
     stations: [],
     poses: [],
   }),
-  getters: {
-    g$getStations(state) {
-      return state.stations;
-    },
-    g$getPoses(state) {
-      return state.poses;
-    },
-    g$getDetail: ({ stations }) => {
-      return (index) => stations[index];
-    },
-  },
   actions: {
+    // POSE FOR AGV LIDAR
     async a$addPose(pose) {
       try {
         const response = await stationService.addPose(pose)
@@ -67,6 +57,7 @@ const useStationStore = defineStore({
       }
     },
 
+    // STATION FOR AGV LINE FOLLOWER
     async a$addStation(stationData) {
       try {
         await stationService.addStation(stationData);
@@ -120,6 +111,18 @@ const useStationStore = defineStore({
         console.error("Error getting station by id:", error.message);
         throw error;
       }
+    },
+  },
+  
+  getters: {
+    g$getStations(state) {
+      return state.stations;
+    },
+    g$getPoses(state) {
+      return state.poses;
+    },
+    g$getDetail: ({ stations }) => {
+      return (index) => stations[index];
     },
   },
 });

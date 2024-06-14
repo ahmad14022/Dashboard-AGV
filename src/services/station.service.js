@@ -29,75 +29,6 @@ class StationService {
     );
   }
 
-  // STATION FOR AGV LINE FOLLOWER
-  async addStation(station) {
-    return axios
-      .post(API_URL + "/station", {
-        code: station.code,
-        status: station.status,
-        rfid: station.rfid,
-      })
-      .then((response) => {
-        console.log("Add Station Response:", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Add Station Error:", error);
-        throw error;
-      });
-  }
-
-  async getStationById(id) {
-    return axios
-      .get(API_URL + "/station/" + id)
-      .then((response) => {
-        console.log("Get Station by ID Response:", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Get Station by ID Error:", error);
-        throw error;
-      });
-  }
-  async getStations() {
-    return axios
-      .get(API_URL + "/station")
-      .then((response) => {
-        console.log("Read Station Response:", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Read Station Error:", error);
-        throw error;
-      });
-  }
-
-  async updateStation(id, updatedStation) {
-    return axios
-      .put(API_URL + "/station/" + id, updatedStation)
-      .then((response) => {
-        console.log("Update Station Response:", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Update Station Error:", error);
-        throw error;
-      });
-  }
-
-  async deleteStation(id) {
-    return axios
-      .delete(API_URL + "/station/" + id)
-      .then((response) => {
-        console.log("Delete Station Response:", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Delete Station Error:", error);
-        throw error;
-      });
-  }
-
   //POSE FOR AGV LIDAR
   async addPose(station) {
     return axios
@@ -153,6 +84,76 @@ class StationService {
       })
       .catch((error) => {
         console.error("Delete Pose Error:", error);
+        throw error;
+      });
+  }
+
+  // STATION FOR AGV LINE FOLLOWER
+  async addStation(station) {
+    return axios
+      .post(API_URL + "/station", {
+        code: station.code,
+        status: station.status,
+        rfid: station.rfid,
+      })
+      .then((response) => {
+        console.log("Add Station Response:", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Add Station Error:", error);
+        throw error;
+      });
+  }
+
+  async getStationById(id) {
+    return axios
+      .get(API_URL + "/station/" + id)
+      .then((response) => {
+        console.log("Get Station by ID Response:", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Get Station by ID Error:", error);
+        throw error;
+      });
+  }
+
+  async getStations() {
+    return axios
+      .get(API_URL + "/station")
+      .then((response) => {
+        console.log("Read Station Response:", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Read Station Error:", error);
+        throw error;
+      });
+  }
+
+  async updateStation(id, updatedStation) {
+    return axios
+      .put(API_URL + "/station/" + id, updatedStation)
+      .then((response) => {
+        console.log("Update Station Response:", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Update Station Error:", error);
+        throw error;
+      });
+  }
+
+  async deleteStation(id) {
+    return axios
+      .delete(API_URL + "/station/" + id)
+      .then((response) => {
+        console.log("Delete Station Response:", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Delete Station Error:", error);
         throw error;
       });
   }

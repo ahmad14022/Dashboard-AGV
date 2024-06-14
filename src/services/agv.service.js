@@ -36,7 +36,6 @@ class AGVService {
         code: agv.code,
         type: agv.type,
         description: agv.description,
-        ip: agv.ip,
       })
       .then((response) => {
         console.log("Add AGV Response:", response.data);

@@ -37,15 +37,6 @@
         ></base-input>
         <br />
 
-        <base-input
-          v-model="input.ip"
-          name="IP Address"
-          class="input"
-          placeholder="add ip address"
-          required
-        ></base-input>
-        <br />
-
         <div class="button-action">
           <argon-button
             type="reset"
@@ -93,7 +84,6 @@ const initialInput = {
   code: "",
   type: "",
   description: "",
-  ip: "",
 };
 
 export default {
@@ -103,7 +93,7 @@ export default {
       input: { ...initialInput },
       editing: null,
       table: {
-        columns: ["code", "type", "description", "ip"],
+        columns: ["code", "type", "description"],
       },
     };
   },
