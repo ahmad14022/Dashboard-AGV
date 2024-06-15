@@ -30,7 +30,7 @@ export default createStore({
     },
     setNgrokPort(state, port) {
       state.ngrokPort = port;
-      console.log(`Port set in Vuex: ${state.ngrokPort}`);
+      // console.log(`Port set in Vuex: ${state.ngrokPort}`);
     },
     toggleConfigurator(state) {
       state.showConfig = !state.showConfig;

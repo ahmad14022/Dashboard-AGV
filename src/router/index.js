@@ -11,11 +11,10 @@ import Signin from "../views/Signin.vue";
 import Cookies from "js-cookie";
 import TableDataAgvLidar from "../views/TableDataAGVLidar.vue";
 import TableDataAgvLineFollower from "../views/TableDataAGVLineFollower.vue";
-import TableDataStationAgvLidar from '../views/TableDataStationAGVLidar.vue';
-import TableDataStationAgvLineFollower from '../views/TableDataStationAGVLineFollower.vue'
+import TableDataStationAgvLidar from "../views/TableDataStationAGVLidar.vue";
+import TableDataStationAgvLineFollower from "../views/TableDataStationAGVLineFollower.vue";
 import HistoryLidarTaskData from "../views/components/HistoryLidarTaskData.vue";
 import HistoryLineTaskData from "../views/components/HistoryLineTaskData.vue";
-
 
 // rute-rute yang digunakan untuk mengakses halaman
 const routes = [
@@ -65,10 +64,10 @@ const routes = [
     component: Todo,
   },
   {
-    path: "/edit-todo/:id", 
+    path: "/edit-todo/:id",
     name: "Edit Todo",
     component: EditTodo,
-    props: true, 
+    props: true,
   },
   {
     path: "/todo-form",
@@ -102,7 +101,7 @@ const routes = [
   },
 ];
 
-// membuat router 
+// membuat router
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
@@ -111,9 +110,12 @@ const router = createRouter({
 
 // Membuat authorizaztion untuk halaman public dan signed user only yang tokennya disimpan di cookies
 router.beforeEach((to, from, next) => {
-  const publicPages = ["/signin", "/dashboard-agv-lidar", "/dashboard-agv-line-follower"];
+  const publicPages = [
+    "/signin",
+    // "/dashboard-agv-lidar", "/dashboard-agv-line-follower"
+  ];
   const authRequired = !publicPages.includes(to.path);
-  const loggedIn = Cookies.get("user"); 
+  const loggedIn = Cookies.get("user");
 
   // jika mengakses halaman yang butuh authorization maka akan redirect ke halaman sign in
   if (authRequired && !loggedIn) {

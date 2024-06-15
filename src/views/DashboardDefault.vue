@@ -5,21 +5,23 @@
         <div class="card p-3 ngrok-port">
           <p class="font-weight-bold text-sm text-center mt-2">
             {{
-              ngrokPort
-                ? `YOUR NGROK PORT: ${ngrokPort}`
-                : "ADD YOUR NGROK PORT"
+              connectedToRosbridge
+                ? `YOUR ROBOT PORT: ${ngrokPort}`
+                : "CONNECT TO ROBOT"
             }}
           </p>
-          <argon-button
-            @click="modal.connectPORT = true"
-            class="bg-gradient-success"
-          >
-            <i class="fas fa-plus" style="margin-left: 5px"></i>
+          <argon-button @click="connect" class="bg-gradient-success">
+            <span v-if="!loading">
+              {{ connectedToRosbridge ? "Connected" : "Connect" }}
+            </span>
+            <span v-else>
+              <i class="fa fa-spinner fa-spin"></i> Connecting...
+            </span>
           </argon-button>
         </div>
         <ip-input v-model:show="modal.connectPORT" modal-classes="modal-lg">
           <template #header>
-            <p class="modal-title">Enter NGROK Port</p>
+            <p class="modal-title">Get Robot Port</p>
           </template>
           <template #body>
             <form @submit.prevent="addPORT">
@@ -35,7 +37,7 @@
           </template>
           <template #footer>
             <argon-button class="bg-gradient-success" @click="addPORT">
-              <span v-if="!loading">Add</span>
+              <span v-if="!loading">Connect</span>
               <span v-else>
                 <i class="fa fa-spinner fa-spin"></i> Loading...
               </span>
@@ -248,6 +250,7 @@ export default {
       axes: [0, 0, 0, 0],
       buttons: [0, 0, 0, 0],
       connected: false,
+      connectedToRosbridge: false,
       mapViewer: null,
       mapGridClient: null,
       msg: null,
@@ -286,6 +289,8 @@ export default {
     ...mapState(["ngrokPort"]),
   },
   created() {
+    this.connect();
+    this.setPort();
     this.connectWebSocket();
     this.fetchAGVData();
     this.fetchPoseData();
@@ -293,6 +298,21 @@ export default {
   methods: {
     ...vuexMapActions(["setNgrokPort", "fetchPoseData"]),
     ...piniaMapActions(useStationStore, ["a$addPose", "a$getPoses"]),
+    connect() {
+      this.loading = true;
+      if (this.connectedToRosbridge) {
+        const toast = useToast();
+        toast.success("Already connected to rosbridge");
+        console.log("Already connected to rosbridge");
+      } else {
+        console.log("Connecting to rosbridge...");
+        this.setPort();
+        this.connectWebSocket();
+        // this.modal.connectPORT = true;
+        this.setPort();
+        this.connectWebSocket();
+      }
+    },
     connectWebSocket() {
       const self = this;
       this.socket = new WebSocket(
@@ -301,26 +321,47 @@ export default {
 
       this.socket.onopen = (event) => {
         const toast = useToast();
-        console.log("ini event", event);
+        console.log("WebSocket connection opened:", event);
         console.log("ngrokPort:", self.ngrokPort);
 
         this.socket.send(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
-
         console.log(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
+
         this.socket.onmessage = (event) => {
+          this.loading = true;
           console.log("Response from server:", event.data);
+          if (
+            event.data.includes("ROSLib connection successful to ROSBRIDGE")
+          ) {
+            self.connectedToRosbridge = true;
+            this.loading = false;
+            toast.success("Connected to Robot");
+            console.log(
+              "BERHASIL TERHUBUNG KE ROSBRIDE",
+              self.connectedToRosbridge
+            );
+          } else {
+            self.connectedToRosbridge = false;
+            const toast = useToast();
+            toast.error("Disconnected to Robot");
+
+            this.loading = true;
+          }
         };
 
-        toast.success("Successfully connected to the echo websocket server...");
+        // toast.success("Successfully connected to the echo websocket server...");
       };
 
       this.socket.onclose = () => {
         const toast = useToast();
-        console.log("Connection died");
+        console.log("WebSocket connection closed");
+        // toast.error("WebSocket connection closed");
+        self.connectedToRosbridge = false;
       };
 
       this.socket.onerror = (error) => {
         console.error("WebSocket error:", error);
+        self.connectedToRosbridge = false;
       };
 
       this.socket.onmessage = (event) => {
@@ -363,6 +404,35 @@ export default {
       } else {
         console.error("WebSocket connection is not open");
       }
+    },
+
+    setPort() {
+      const self = this;
+      this.ws = new WebSocket("wss://sans-agv.azurewebsites.net/ws/dashboard/lidar");
+
+      this.ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.port) {
+            self.input.port = message.port.toString();
+            self.setNgrokPort(self.input.port);
+            // const toast = useToast();
+            // toast.success(`NGROK port ${message.port} received successfully.`);
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
+        }
+      };
+
+      this.ws.onclose = () => {
+        const toast = useToast();
+        console.log("WebSocket connection closed");
+        // toast.error("WebSocket connection closed");
+      };
+
+      this.ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
     },
     addPORT() {
       const toast = useToast();
