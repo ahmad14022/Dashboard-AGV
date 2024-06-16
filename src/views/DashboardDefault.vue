@@ -310,6 +310,7 @@ export default {
         const toast = useToast();
         toast.success("Already connected to rosbridge");
         console.log("Already connected to rosbridge");
+        this.loading = false;
       } else {
         console.log("Connecting to rosbridge...");
         this.setPort();
