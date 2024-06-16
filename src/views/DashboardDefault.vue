@@ -3,20 +3,26 @@
     <div class="row">
       <div class="col-lg col-md-6 col-12">
         <div class="card p-3 ngrok-port">
-          <p class="font-weight-bold text-sm text-center mt-2">
-            {{
-              connectedToRosbridge
-                ? `YOUR ROBOT PORT: ${ngrokPort}`
-                : "CONNECT TO ROBOT"
-            }}
-          </p>
+          <span v-if="!loading">
+            <p class="font-weight-bold text-md text-center mt-2">
+              {{
+                connectedToRosbridge
+                  ? `YOUR ROBOT PORT: ${ngrokPort}`
+                  : "Not Connected to Robot"
+              }}
+            </p>
+          </span>
+          <span v-else>
+            <p class="font-weight-bold text-sm text-center mt-2">
+              <i class="fa fa-spinner fa-spin"></i>
+              Connecting...
+            </p>
+          </span>
           <argon-button @click="connect" class="bg-gradient-success">
             <span v-if="!loading">
-              {{ connectedToRosbridge ? "Connected" : "Connect" }}
+              {{ connectedToRosbridge ? "Connected" : "Connect to Robot" }}
             </span>
-            <span v-else>
-              <i class="fa fa-spinner fa-spin"></i> Connecting...
-            </span>
+            <span v-else> Connect to Robot </span>
           </argon-button>
         </div>
         <ip-input v-model:show="modal.connectPORT" modal-classes="modal-lg">
@@ -408,7 +414,9 @@ export default {
 
     setPort() {
       const self = this;
-      this.ws = new WebSocket("wss://sans-agv.azurewebsites.net/ws/dashboard/lidar");
+      this.ws = new WebSocket(
+        "wss://sans-agv.azurewebsites.net/ws/dashboard/lidar"
+      );
 
       this.ws.onmessage = (event) => {
         try {
