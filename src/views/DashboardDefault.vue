@@ -18,7 +18,12 @@
               Connecting...
             </p>
           </span>
-          <argon-button @click="connect" class="bg-gradient-success">
+          <argon-button
+            @click="connect"
+            @mouseover="isHovered = true"
+            @mouseleave="isHovered = false"
+            :class="buttonClass"
+          >
             <span v-if="!loading">
               {{ connectedToRosbridge ? "Connected" : "Connect to Robot" }}
             </span>
@@ -121,7 +126,7 @@
                   <argon-button
                     :size="sm"
                     class="button-read bg-gradient-success"
-                    @click="modal.displayPose = true"
+                    @click="buttonRead"
                     ><span class="switch-button-text">Read</span>
                     <i class="fas fa-plus" style="margin-left: 7px"></i
                   ></argon-button>
@@ -293,9 +298,15 @@ export default {
   },
   computed: {
     ...mapState(["ngrokPort"]),
+    buttonClass() {
+      return {
+        "bg-gradient-success": !this.isHovered,
+        "bg-gradient-success-dark": this.isHovered,
+      };
+    },
   },
   created() {
-    this.connect();
+    // this.connect();
     this.setPort();
     this.connectWebSocket();
     this.fetchAGVData();
@@ -304,14 +315,17 @@ export default {
   methods: {
     ...vuexMapActions(["setNgrokPort", "fetchPoseData"]),
     ...piniaMapActions(useStationStore, ["a$addPose", "a$getPoses"]),
+    buttonRead() {
+      (this.modal.displayPose = true), this.fetchPose();
+    },
     connect() {
-      this.loading = true;
+      this.loading = false;
       if (this.connectedToRosbridge) {
         const toast = useToast();
         toast.success("Already connected to rosbridge");
         console.log("Already connected to rosbridge");
-        this.loading = false;
       } else {
+        this.loading = true;
         console.log("Connecting to rosbridge...");
         this.setPort();
         this.connectWebSocket();
@@ -338,25 +352,41 @@ export default {
           this.loading = true;
           console.log("Response from server:", event.data);
           if (
-            event.data.includes("ROSLib connection successful to ROSBRIDGE")
+            event.data.includes("ROSLib connection successful to ROSBRIDGE") ||
+            event.data.includes("Already connected to rosbridge")
           ) {
             self.connectedToRosbridge = true;
             this.loading = false;
             toast.success("Connected to Robot");
             console.log(
-              "BERHASIL TERHUBUNG KE ROSBRIDE",
+              "BERHASIL TERHUBUNG KE ROSBRIDGE",
               self.connectedToRosbridge
             );
-          } else {
+          } else if (event.data.includes("ROSLib connection closed")) {
             self.connectedToRosbridge = false;
             const toast = useToast();
             toast.error("Disconnected to Robot");
 
             this.loading = true;
+          } else if (event.data.startsWith('{"position":')) {
+            const data = JSON.parse(event.data);
+            self.input.x = data.position.x;
+            self.input.y = data.position.y;
+            self.input.z = data.position.z;
+            self.input.w = data.orientation.w;
+
+            console.log(
+              "X:",
+              self.input.x,
+              "Y:",
+              self.input.y,
+              "Z:",
+              self.input.z,
+              "W:",
+              self.input.w
+            );
           }
         };
-
-        // toast.success("Successfully connected to the echo websocket server...");
       };
 
       this.socket.onclose = () => {
@@ -375,6 +405,7 @@ export default {
         console.log("Received message:", event.data);
       };
     },
+
     start() {
       console.log("start");
       this.status = "start";
@@ -568,6 +599,11 @@ export default {
 </script>
 
 <style>
+.bg-gradient-success-dark {
+  background: linear-gradient(87deg, #6c28a7 0, #28a7a3 100%) !important;
+  transition: background 0.3s;
+}
+
 .text-start {
   color: green;
 }

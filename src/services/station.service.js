@@ -30,14 +30,14 @@ class StationService {
   }
 
   //POSE FOR AGV LIDAR
-  async addPose(station) {
+  async addPose(pose) {
     return axios
       .post(API_URL + "/pose", {
-        code: station.code,
-        x: station.x,
-        y: station.y,
-        z: station.z,
-        w: station.w,
+        code: pose.code,
+        x: pose.x,
+        y: pose.y,
+        z: pose.z,
+        w: pose.w,
       })
       .then((response) => {
         console.log("Add Pose Response:", response.data);
