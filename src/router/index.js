@@ -108,18 +108,15 @@ const router = createRouter({
   linkActiveClass: "active",
 });
 
-// Membuat authorizaztion untuk halaman public dan signed user only yang tokennya disimpan di cookies
 router.beforeEach((to, from, next) => {
-  const publicPages = [
-    "/signin",
-    // "/dashboard-agv-lidar", "/dashboard-agv-line-follower"
-  ];
+  const publicPages = ["/signin"];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = Cookies.get("user");
 
-  // jika mengakses halaman yang butuh authorization maka akan redirect ke halaman sign in
   if (authRequired && !loggedIn) {
     next("/signin");
+  } else if (loggedIn && to.path === "/signin") {
+    next("/dashboard-agv-lidar");
   } else {
     next();
   }

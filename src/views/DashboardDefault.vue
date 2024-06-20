@@ -4,10 +4,10 @@
       <div class="col-lg col-md-6 col-12">
         <div class="card p-3 ngrok-port">
           <span v-if="!loading">
-            <p class="font-weight-bold text-md text-center mt-2">
+            <p class="font-weight-bold text-center mt-2">
               {{
                 connectedToRosbridge
-                  ? `YOUR ROBOT PORT: ${ngrokPort}`
+                  ? `Connected to Robot ${ngrokPort}`
                   : "Not Connected to Robot"
               }}
             </p>
@@ -184,10 +184,7 @@
                         class="bg-gradient-success"
                         @click="addPose"
                       >
-                        <span v-if="!loading">Save</span>
-                        <span v-else>
-                          <i class="fa fa-spinner fa-spin"></i> Connecting...
-                        </span>
+                        <span>Save</span>
                       </argon-button>
                     </template>
                   </ip-input>
@@ -195,25 +192,6 @@
               </div>
             </div>
             <authors-table-lidar-pose />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12 mb-lg mb-3">
-        <div class="card">
-          <div
-            class="card-body px-0 pt-1 pb-2 d-flex flex-column justify-content-center"
-          >
-            <div class="pb-0 card-header">
-              <div class="d-flex justify-content-between align-items-center">
-                <h6 class="mb-2 bg-title">Data Task</h6>
-                <router-link to="/history-lidar-task" class="text-end">
-                  See History <i class="fas fa-regular fa-clock"></i>
-                </router-link>
-              </div>
-            </div>
-            <authors-table-lidar />
           </div>
         </div>
       </div>
@@ -322,13 +300,11 @@ export default {
       this.loading = false;
       if (this.connectedToRosbridge) {
         const toast = useToast();
-        toast.success("Already connected to rosbridge");
+        toast.success("Already connected to robot");
         console.log("Already connected to rosbridge");
       } else {
         this.loading = true;
-        console.log("Connecting to rosbridge...");
-        this.setPort();
-        this.connectWebSocket();
+        console.log("Connecting to robot...");
         // this.modal.connectPORT = true;
         this.setPort();
         this.connectWebSocket();
@@ -344,9 +320,23 @@ export default {
         const toast = useToast();
         console.log("WebSocket connection opened:", event);
         console.log("ngrokPort:", self.ngrokPort);
+        const dataPort = localStorage.getItem("port");
 
-        this.socket.send(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
-        console.log(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
+        if (self.ngrokPort) {
+          this.socket.send(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
+          self.url = `ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`;
+          // console.log(`ws://0.tcp.ap.ngrok.io:${self.ngrokPort}`);
+          console.log("url", self.url);
+          this.setPort();
+        } else if (dataPort) {
+          this.socket.send(`ws://0.tcp.ap.ngrok.io:${dataPort}`);
+          self.url = `ws://0.tcp.ap.ngrok.io:${dataPort}`;
+          console.log("url", self.url);
+          this.setPort();
+          console.log(
+            `Retrieved from local storage: ws://0.tcp.ap.ngrok.io:${dataPort}`
+          );
+        }
 
         this.socket.onmessage = (event) => {
           this.loading = true;
@@ -366,8 +356,14 @@ export default {
             self.connectedToRosbridge = false;
             const toast = useToast();
             toast.error("Disconnected to Robot");
-
             this.loading = true;
+            this.connectWebSocket();
+          } else if (event.data.includes("ROSLib connection error")) {
+            self.connectedToRosbridge = false;
+            const toast = useToast();
+            toast.error("Cannot connect to Robot");
+            this.loading = true;
+            this.connectWebSocket();
           } else if (event.data.startsWith('{"position":')) {
             const data = JSON.parse(event.data);
             self.input.x = data.position.x;
@@ -385,6 +381,7 @@ export default {
               "W:",
               self.input.w
             );
+            this.connectWebSocket();
           }
         };
       };
@@ -394,11 +391,15 @@ export default {
         console.log("WebSocket connection closed");
         // toast.error("WebSocket connection closed");
         self.connectedToRosbridge = false;
+        this.setPort();
+        this.connectWebSocket();
       };
 
       this.socket.onerror = (error) => {
         console.error("WebSocket error:", error);
         self.connectedToRosbridge = false;
+        this.setPort();
+        this.connectWebSocket();
       };
 
       this.socket.onmessage = (event) => {
@@ -418,6 +419,8 @@ export default {
       this.sendJoystickData();
     },
     move({ x, y, direction, distance }) {
+      this.loading = false;
+      this.connectedToRosbridge = true;
       console.log("move", { x, y, direction, distance });
       this.direction = direction;
       this.status = "move";
@@ -425,6 +428,8 @@ export default {
       this.sendJoystickData();
     },
     joyStop() {
+      this.loading = false;
+      this.connectedToRosbridge = true;
       this.axes = [0, 0, 0, 0];
     },
     joyMove(x, y) {
@@ -455,9 +460,8 @@ export default {
           const message = JSON.parse(event.data);
           if (message.port) {
             self.input.port = message.port.toString();
+            localStorage.setItem("port", self.input.port);
             self.setNgrokPort(self.input.port);
-            // const toast = useToast();
-            // toast.success(`NGROK port ${message.port} received successfully.`);
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -468,10 +472,25 @@ export default {
         const toast = useToast();
         console.log("WebSocket connection closed");
         // toast.error("WebSocket connection closed");
+        const storedPort = localStorage.getItem("port");
+        if (storedPort) {
+          console.log("ngrok port retrieved form local storage", storedPort);
+          self.input.port = storedPort;
+          self.setNgrokPort(storedPort);
+        } else {
+          console.warn("No port found in local storage.");
+        }
       };
 
       this.ws.onerror = (error) => {
         console.error("WebSocket error:", error);
+        const storedPort = localStorage.getItem("port");
+        if (storedPort) {
+          self.input.port = storedPort;
+          self.setNgrokPort(storedPort);
+        } else {
+          console.warn("No port found in local storage.");
+        }
       };
     },
     addPORT() {
@@ -504,8 +523,8 @@ export default {
             } else if (stationDetails.length === 3) {
               this.stats.pose.detail = stationDetails.join(", ");
             } else {
-              const firstThreeStations = stationDetails.slice(0, 3);
-              const remainingStations = stationDetails.slice(3);
+              const firstThreeStations = stationDetails.slice(0, 2);
+              const remainingStations = stationDetails.slice(2);
               const formattedDetail = `${firstThreeStations.join(", ")}, ...`;
               this.stats.pose.detail = formattedDetail;
             }
@@ -528,7 +547,7 @@ export default {
             const agvDetails = agvData.map((agv) => agv.code);
             if (agvDetails.length > 2) {
               const firstTwoAGVs = agvDetails.slice(0, 2);
-              const remainingAGVs = agvDetails.slice(2);
+              const remainingAGVs = agvDetails.slice();
               const formattedDetail = `${firstTwoAGVs.join(", ")} & ${
                 remainingAGVs[0]
               }`;
@@ -555,19 +574,6 @@ export default {
     async addPose() {
       try {
         const toast = useToast();
-        this.loading = true;
-        if (
-          !this.input.code ||
-          !this.input.x ||
-          !this.input.y ||
-          !this.input.z ||
-          !this.input.w
-        ) {
-          toast.error("Mohon lengkapi semua input.");
-          this.loading = false;
-          return;
-        }
-
         await this.a$addPose(this.input);
         this.fetchPoseData();
         await this.a$getPoses();
