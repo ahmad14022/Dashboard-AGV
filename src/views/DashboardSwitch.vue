@@ -16,13 +16,13 @@
                   <i v-else class="fas fa-pause-circle fa-3x"></i>
                 </div>
                 <div>
-                  <h5>{{ this.speedInput }}</h5>
+                  <h5>{{ this.speedInput }} PWM</h5>
                   <input
                     id="speedRange"
                     type="range"
                     v-model="speedInput"
                     min="0"
-                    max="200"
+                    max="150"
                     @change="setSpeed"
                     class="w-100"
                   />
@@ -81,7 +81,9 @@
             <div class="card">
               <div class="card-body px-0 pt-1 pb-2 d-flex flex-column">
                 <div class="pb-0 card-header">
-                  <div class="d-flex justify-content-between align-items-center">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
                     <h6 class="mb-2 bg-title">Data Task</h6>
                     <router-link to="/history-line-task" class="text-end"
                       >See History <i class="fas fa-regular fa-clock"></i
@@ -196,7 +198,7 @@ export default {
     };
 
     this.socket.onclose = (event) => {
-      const toast = useToast()
+      const toast = useToast();
       if (event.wasClean) {
         toast.warning(
           `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`

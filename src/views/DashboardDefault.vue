@@ -284,7 +284,8 @@ export default {
     },
   },
   created() {
-    // this.connect();
+    this.connectedToRosbridge = false;
+    this.loading = true;
     this.setPort();
     this.connectWebSocket();
     this.fetchAGVData();
@@ -357,13 +358,13 @@ export default {
             const toast = useToast();
             toast.error("Disconnected to Robot");
             this.loading = true;
-            this.connectWebSocket();
+            // this.connectWebSocket();
           } else if (event.data.includes("ROSLib connection error")) {
             self.connectedToRosbridge = false;
             const toast = useToast();
             toast.error("Cannot connect to Robot");
             this.loading = true;
-            this.connectWebSocket();
+            // this.connectWebSocket();
           } else if (event.data.startsWith('{"position":')) {
             const data = JSON.parse(event.data);
             self.input.x = data.position.x;
@@ -391,15 +392,11 @@ export default {
         console.log("WebSocket connection closed");
         // toast.error("WebSocket connection closed");
         self.connectedToRosbridge = false;
-        this.setPort();
-        this.connectWebSocket();
       };
 
       this.socket.onerror = (error) => {
         console.error("WebSocket error:", error);
         self.connectedToRosbridge = false;
-        this.setPort();
-        this.connectWebSocket();
       };
 
       this.socket.onmessage = (event) => {
