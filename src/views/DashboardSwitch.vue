@@ -5,28 +5,35 @@
         <div class="row">
           <div class="col-lg col-md-6 col-12 mb-4">
             <div class="card">
-              <p class="font-weight-bold text-sm text-center mt-2">
-                CONTROL & SPEED SETTINGS
-              </p>
+              <p class="font-weight-bold text-sm text-center mt-2">POWER</p>
               <div
-                class="d-flex justify-content-around align-items-center mb-2"
+                class="d-flex justify-content-around align-items-center mb-4"
               >
                 <div @click="toggleAGV" class="pointer">
                   <i v-if="!agvOn" class="fas fa-play-circle fa-3x"></i>
                   <i v-else class="fas fa-pause-circle fa-3x"></i>
                 </div>
-                <div>
-                   <h5>{{ this.speedInput }} PWM</h5>
-                  <input
-                    id="speedRange"
-                    type="range"
-                    v-model="speedInput"
-                    min="0"
-                    max="150"
-                    @change="setSpeed"
-                    class="w-100"
-                  />
-                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg col-md-6 col-12">
+            <div class="card">
+              <p class="font-weight-bold text-sm text-center mt-2">
+                CONTROL & SPEED SETTINGS
+              </p>
+              <div class="range-container">
+                <h5 class="font-weight-bold text-center">
+                  {{ this.speedInput }} PWM
+                </h5>
+                <input
+                  id="speedRange"
+                  type="range"
+                  v-model="speedInput"
+                  min="0"
+                  max="150"
+                  @change="setSpeed"
+                  class="range-input mb-3"
+                />
               </div>
             </div>
           </div>
@@ -49,18 +56,6 @@
               :iconClass="stats.users.iconClass"
               :iconBackground="stats.users.iconBackground"
               :detail="stats.users.detail"
-              directionReverse
-            ></card>
-          </div>
-          <div class="col-lg col-md-6 col-12">
-            <card
-              :title="stats.clients.title"
-              :value="stats.clients.value"
-              :percentage="stats.clients.percentage"
-              :iconClass="stats.clients.iconClass"
-              :iconBackground="stats.clients.iconBackground"
-              :percentageColor="stats.clients.percentageColor"
-              :detail="stats.clients.detail"
               directionReverse
             ></card>
           </div>
@@ -362,5 +357,16 @@ export default {
 
 .pointer {
   cursor: pointer;
+}
+
+.range-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.range-input {
+  width: 80%;
 }
 </style>
