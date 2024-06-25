@@ -16,7 +16,7 @@
                   <i v-else class="fas fa-pause-circle fa-3x"></i>
                 </div>
                 <div>
-                  <h5>{{ this.speedInput }} PWM</h5>
+                   <h5>{{ this.speedInput }} PWM</h5>
                   <input
                     id="speedRange"
                     type="range"
