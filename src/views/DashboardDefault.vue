@@ -244,7 +244,7 @@ export default {
       mapGridClient: null,
       msg: null,
       agvOn: false,
-      loading: false,
+      loading: true,
       stats: {
         pose: {
           title: "Jumlah Pose",
@@ -284,8 +284,6 @@ export default {
     },
   },
   created() {
-    this.connectedToRosbridge = false;
-    this.loading = true;
     this.setPort();
     this.connectWebSocket();
     this.fetchAGVData();
@@ -298,11 +296,11 @@ export default {
       (this.modal.displayPose = true), this.fetchPose();
     },
     connect() {
-      this.loading = false;
       if (this.connectedToRosbridge) {
         const toast = useToast();
         toast.success("Already connected to robot");
         console.log("Already connected to rosbridge");
+        this.loading = false;
       } else {
         this.loading = true;
         console.log("Connecting to robot...");
@@ -318,6 +316,8 @@ export default {
       );
 
       this.socket.onopen = (event) => {
+        this.connectedToRosbridge = false;
+        this.loading = true;
         const toast = useToast();
         console.log("WebSocket connection opened:", event);
         console.log("ngrokPort:", self.ngrokPort);
@@ -448,6 +448,8 @@ export default {
 
     setPort() {
       const self = this;
+      this.connectedToRosbridge = false;
+      this.loading = true;
       this.ws = new WebSocket(
         "wss://sans-agv.azurewebsites.net/ws/dashboard/lidar"
       );
