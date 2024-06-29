@@ -141,7 +141,7 @@ export default {
         console.log(`hapus: ${idToRemove}`);
         await this.a$deleteTask(idToRemove);
         await this.getData();
-        this.showToast("History Task Deleted Successfully", "success");
+        this.showToast("Data Task Deleted Successfully", "success");
       } catch (error) {
         console.error("Failed to remove row:", error);
       }
